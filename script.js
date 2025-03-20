@@ -20,7 +20,7 @@ function loadData() {
     let scenario = document.getElementById('scenarioSelect').value;
     
     // Map the selected scenario to the correct GeoJSON file
-    let filePath = `data/${scenario}`;
+    let filePath = `${scenario}`;
 
     fetch(filePath)
         .then(res => res.json())
