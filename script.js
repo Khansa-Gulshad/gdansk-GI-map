@@ -18,7 +18,11 @@ function getColor(score) {
 // Load and filter data
 function loadData() {
     let scenario = document.getElementById('scenarioSelect').value;
-    fetch(`data/${scenario}`)
+    
+    // Map the selected scenario to the correct GeoJSON file
+    let filePath = `data/${scenario}`;
+
+    fetch(filePath)
         .then(res => res.json())
         .then(data => {
             if (geojsonLayer) map.removeLayer(geojsonLayer);
@@ -64,6 +68,7 @@ document.querySelectorAll('#controls input, #scenarioSelect').forEach(input => {
 
 // Initial load of map data
 loadData();
+
 
 // Add interactive legend
 let legend = L.control({position: 'bottomright'});
