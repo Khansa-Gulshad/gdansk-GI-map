@@ -11,6 +11,7 @@
     <p><strong>Disclaimer:</strong> This map shows data based on greening suitability calculations. The scores might not reflect everyone’s point of view due to variations in roof types, surroundings, and other factors.</p>
     <button id="closeInfoPanel">Explore the Map</button>
 </div>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,6 +29,51 @@
             right: 10px;
             z-index: 1000;
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Info Panel Styling */
+        .info-panel {
+            background-color: rgba(255, 255, 255, 0.9);
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-radius: 10px;
+            font-family: Arial, sans-serif;
+            display: block;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .info-panel h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .info-panel button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .info-panel button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -58,5 +104,16 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
+
+    <script>
+        // JavaScript to hide the info panel
+        document.getElementById('closeInfoPanel').addEventListener('click', function() {
+            let infoPanel = document.getElementById('infoPanel');
+            infoPanel.style.opacity = '0'; // Fade out the panel
+            setTimeout(function() {
+                infoPanel.style.display = 'none'; // Remove the panel from the view
+            }, 500); // Wait for the fade-out animation to complete
+        });
+    </script>
 </body>
 </html>
