@@ -64,3 +64,22 @@ document.querySelectorAll('#controls input, #scenarioSelect').forEach(input => {
 
 // Initial load of map data
 loadData();
+
+let legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+    let div = L.DomUtil.create('div', 'info legend');
+    let scores = [0, 20, 40, 60, 80];
+    let labels = [];
+
+    for (let i = 0; i < scores.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(scores[i] + 1) + '"></i> ' +
+            scores[i] + (scores[i + 1] ? '&ndash;' + scores[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+};
+
+legend.addTo(map);
+
