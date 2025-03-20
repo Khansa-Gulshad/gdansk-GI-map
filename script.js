@@ -65,6 +65,7 @@ document.querySelectorAll('#controls input, #scenarioSelect').forEach(input => {
 // Initial load of map data
 loadData();
 
+// Add interactive legend
 let legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
@@ -82,4 +83,3 @@ legend.onAdd = function (map) {
 };
 
 legend.addTo(map);
-
