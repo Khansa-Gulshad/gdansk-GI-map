@@ -32,20 +32,20 @@ function loadData() {
                 filter: feature =>
                     feature.properties.Slope <= maxSlope &&
                     feature.properties.Height <= maxHeight &&
-                    feature.properties.Area1 <= maxArea &&
-                    feature.properties.shape_ratio <= maxShape,
+                    feature.properties.Area1 <= maxArea &&  // 'area1' from your code
+                    feature.properties.shape_ratio <= maxShape, // 'shape_ratio' from your code
 
                 style: feature => ({
-                    color: getColor(feature.properties.GPS_roof), // GPS score used for color
+                    color: getColor(feature.properties.GPS_roof), // 'GPS_roof' from your code
                     weight: 2, fillOpacity: 0.7
                 }),
 
                 onEachFeature: (feature, layer) => {
                     layer.bindPopup(`
-                        <strong>Greening Potential Score:</strong> ${feature.properties.GPS_roof}<br>
-                        <strong>Height:</strong> ${feature.properties.Height} m<br>
-                        <strong>Slope:</strong> ${feature.properties.Slope}°<br>
-                        <strong>Area:</strong> ${feature.properties.Area1} m²<br>
+                        <strong>Greening Potential Score:</strong> ${feature.properties.GPS_roof}<br> 
+                        <strong>Height:</strong> ${feature.properties.Height} m<br> 
+                        <strong>Slope:</strong> ${feature.properties.Slope}°<br> 
+                        <strong>Area:</strong> ${feature.properties.Area1} m²<br> 
                         <strong>Shape Ratio:</strong> ${feature.properties.shape_ratio}
                     `);
                 }
