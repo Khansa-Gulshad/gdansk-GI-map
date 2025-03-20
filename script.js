@@ -30,9 +30,9 @@ function loadData() {
 
             geojsonLayer = L.geoJSON(data, {
                 filter: feature =>
-                    feature.properties.slope <= maxSlope &&
-                    feature.properties.height <= maxHeight &&
-                    feature.properties.area <= maxArea &&
+                    feature.properties.Slope <= maxSlope &&
+                    feature.properties.Height <= maxHeight &&
+                    feature.properties.Area1 <= maxArea &&
                     feature.properties.shape_ratio <= maxShape,
 
                 style: feature => ({
@@ -43,9 +43,9 @@ function loadData() {
                 onEachFeature: (feature, layer) => {
                     layer.bindPopup(`
                         <strong>Greening Potential Score:</strong> ${feature.properties.GPS_roof}<br>
-                        <strong>Height:</strong> ${feature.properties.height} m<br>
-                        <strong>Slope:</strong> ${feature.properties.slope}°<br>
-                        <strong>Area:</strong> ${feature.properties.area} m²<br>
+                        <strong>Height:</strong> ${feature.properties.Height} m<br>
+                        <strong>Slope:</strong> ${feature.properties.Slope}°<br>
+                        <strong>Area:</strong> ${feature.properties.Area1} m²<br>
                         <strong>Shape Ratio:</strong> ${feature.properties.shape_ratio}
                     `);
                 }
