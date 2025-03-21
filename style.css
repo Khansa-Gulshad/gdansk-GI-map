@@ -45,9 +45,11 @@
 
 /* Map container */
 #map {
-    height: 90vh; /* Make the map take 90% of the viewport height */
-    width: 100%;  /* Map width should span the full container width */
+    height: 100vh;  /* Set the height to 100% of the viewport height */
+    width: 100%;    /* Set the width to 100% of the container width */
+    background-color: #2c3e50; /* Optional: Adding a darker background color */
 }
+
 
 /* Control Panel */
 #controls {
