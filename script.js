@@ -1,18 +1,20 @@
 let map = L.map('map').setView([54.3520, 18.6466], 13); // Gdańsk coordinates
 let geojsonLayer;
 
-// Base map
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
+// Use Mapbox dark theme base layer
+L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://www.mapbox.com/about/maps/">Mapbox</a>',
+    tileSize: 512,
+    zoomOffset: -1
 }).addTo(map);
 
-// Color scale based on Greening Potential
+// Color scale based on Greening Potential Score
 function getColor(score) {
-    return score > 80 ? '#006837' :
-           score > 60 ? '#31a354' :
-           score > 40 ? '#78c679' :
-           score > 20 ? '#c2e699' :
-                        '#ffffcc';
+    return score > 0.8 ? '#d73027' :  // Red
+           score > 0.6 ? '#fc8d59' :  // Orange
+           score > 0.4 ? '#fee08b' :  // Yellow
+           score > 0.2 ? '#d9ef8b' :  // Light Green
+                         '#1a9850';    // Dark Green
 }
 
 // Load and filter data
@@ -69,13 +71,12 @@ document.querySelectorAll('#controls input, #scenarioSelect').forEach(input => {
 // Initial load of map data
 loadData();
 
-
 // Add interactive legend
 let legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
     let div = L.DomUtil.create('div', 'info legend');
-    let scores = [0, 20, 40, 60, 80];
+    let scores = [0, 0.2, 0.4, 0.6, 0.8];
     let labels = [];
 
     for (let i = 0; i < scores.length; i++) {
