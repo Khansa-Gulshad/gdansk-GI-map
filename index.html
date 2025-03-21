@@ -1,36 +1,12 @@
-<!-- Info Panel -->
-<div id="infoPanel" class="info-panel">
-    <h2>Potential Green Roofs Map for Gdańsk</h2>
-    <p><strong>Mapping Green Roof Potential</strong></p>
-    <p>How suitable are the roofs in Gdańsk for greening according to their characteristics?</p>
-    <p>If you want more information, check the <a href="#" target="_blank">info page</a>.</p>
-    <p>Toggle map layers on or off:</p>
-    <ul>
-        <li><strong>Green Roofs layer</strong>: Color-coded based on potential greening suitability.</li>
-    </ul>
-    <p><strong>Disclaimer:</strong> This map shows data based on greening suitability calculations. The scores might not reflect everyone’s point of view due to variations in roof types, surroundings, and other factors.</p>
-    <button id="closeInfoPanel">Explore the Map</button>
-</div>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gdańsk Green Roofs Potential</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <title>Green Roof Potential in Gdańsk</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
     <style>
-        #map { height: 90vh; width: 100%; }
-        #controls {
-            padding: 10px;
-            background: white;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-
         /* Info Panel Styling */
         .info-panel {
             background-color: rgba(255, 255, 255, 0.9);
@@ -75,10 +51,58 @@
         .info-panel button:hover {
             background-color: #0056b3;
         }
+
+        /* Map Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            height: 100%;
+        }
+
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .controls input {
+            margin: 10px 0;
+        }
+
+        .controls label {
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <div id="controls">
+    <!-- Info Panel -->
+    <div id="infoPanel" class="info-panel">
+        <h2>Potential Green Roofs Map for Gdańsk</h2>
+        <p><strong>Mapping Green Roof Potential</strong></p>
+        <p>How suitable are the roofs in Gdańsk for greening according to their characteristics?</p>
+        <p>If you want more information, check the <a href="#" target="_blank">info page</a>.</p>
+        <p>Toggle map layers on or off:</p>
+        <ul>
+            <li><strong>Green Roofs layer</strong>: Color-coded based on potential greening suitability.</li>
+        </ul>
+        <p><strong>Disclaimer:</strong> This map shows data based on greening suitability calculations. The scores might not reflect everyone’s point of view due to variations in roof types, surroundings, and other factors.</p>
+        <button id="closeInfoPanel">Explore the Map</button>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Controls Panel -->
+    <div class="controls">
         <label>Slope (°): <span id="slopeVal">0-90</span></label><br>
         <input type="range" id="slopeRange" min="0" max="90" value="90" step="1"><br>
 
@@ -92,7 +116,6 @@
         <input type="range" id="shapeRange" min="0" max="5" value="5" step="0.1"><br>
 
         <label>Scenario:</label>
-        <!-- Updated dropdown with correct GeoJSON filenames -->
         <select id="scenarioSelect">
             <option value="filtered_buildings_scenario1.geojson">Scenario 1</option>
             <option value="filtered_buildings_scenario2.geojson">Scenario 2</option>
@@ -100,20 +123,7 @@
         </select><br>
     </div>
 
-    <div id="map"></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
-
-    <script>
-        // JavaScript to hide the info panel
-        document.getElementById('closeInfoPanel').addEventListener('click', function() {
-            let infoPanel = document.getElementById('infoPanel');
-            infoPanel.style.opacity = '0'; // Fade out the panel
-            setTimeout(function() {
-                infoPanel.style.display = 'none'; // Remove the panel from the view
-            }, 500); // Wait for the fade-out animation to complete
-        });
-    </script>
 </body>
 </html>
