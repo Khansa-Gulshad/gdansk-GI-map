@@ -1,3 +1,10 @@
+/* Reset body and html styles to prevent unwanted borders or spacing */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensures that the body and HTML elements take full height */
+}
+
 /* Info Panel Styling */
 .info-panel {
     background-color: rgba(255, 255, 255, 0.9);
@@ -45,11 +52,10 @@
 
 /* Map container */
 #map {
-    height: 100vh;  /* Set the height to 100% of the viewport height */
-    width: 100%;    /* Set the width to 100% of the container width */
-    background-color: #2c3e50; /* Optional: Adding a darker background color */
+    height: 100vh;  /* Ensure the map takes 100% of the viewport height */
+    width: 100%;    /* Ensure the map spans the full width */
+    background-color: #2c3e50; /* Optional: Adding a darker background */
 }
-
 
 /* Control Panel */
 #controls {
