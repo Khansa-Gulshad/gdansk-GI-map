@@ -26,6 +26,8 @@ function getColor(d) {
 // Define a function to style each feature
 function style(feature) {
     const score = feature.properties.GPS_roof;
+    console.log("GPS_roof:", score); // ← keep this for debug
+
     return {
         fillColor: getColor(score),
         weight: 0,
