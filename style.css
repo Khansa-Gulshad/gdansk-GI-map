@@ -75,3 +75,35 @@ html, body {
 #info-panel button:hover {
   background-color: #00b3cc;
 }
+
+/* Style for the custom scenario buttons */
+.leaflet-control-custom {
+    background-color: transparent;
+    border: none;
+}
+
+.leaflet-bar-btn {
+    display: block;
+    background-color: #343a40;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.leaflet-bar-btn i {
+    margin-right: 8px;
+}
+
+.leaflet-bar-btn:hover {
+    background-color: #495057;
+}
+
+.leaflet-bar-btn:focus {
+    outline: none;
+}
+
