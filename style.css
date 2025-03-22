@@ -78,32 +78,29 @@ html, body {
 
 /* Style for the custom scenario buttons */
 .leaflet-control-custom {
-    background-color: transparent;
-    border: none;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
 }
 
-.leaflet-bar-btn {
-    display: block;
-    background-color: #343a40;
-    color: #fff;
-    border: none;
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    border-radius: 5px;
-    text-align: center;
+.scenario-btn {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 5px;
 }
 
-.leaflet-bar-btn i {
-    margin-right: 8px;
+.scenario-btn:hover {
+  background-color: #00eaff;
 }
 
-.leaflet-bar-btn:hover {
-    background-color: #495057;
+.scenario-btn:focus {
+  outline: none;
 }
-
-.leaflet-bar-btn:focus {
-    outline: none;
-}
-
