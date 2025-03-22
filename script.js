@@ -17,26 +17,25 @@ const scenario1Url = 'filtered_buildings_scenario1.geojson';
 const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
-// Color scale based on GPS_roof score
-// Create a color scale from red (low) to green (high)
-const colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']).domain([0, 1]);
+// Create a base chroma scale (domain will be updated dynamically)
+let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
 
 function getColor(score) {
-    return colorScale(score).hex(); // returns color like "#a3f56b"
+  return colorScale(score).hex();
 }
 
-
-// Style function for each feature
+// Style each building
 function style(feature) {
-    const score = parseFloat(feature.properties.GPS_roof);
-    return {
-        fillColor: getColor(score),
-        weight: 0,
-        color: 'transparent',
-        fillOpacity: 0.9
-    };
+  const score = parseFloat(feature.properties.GPS_roof);
+  return {
+    fillColor: getColor(score),
+    weight: 0,
+    color: 'transparent',
+    fillOpacity: 0.9
+  };
 }
-// Popup binding function
+
+// Popup for each feature
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     layer.bindPopup(
@@ -52,16 +51,18 @@ function onEachFeature(feature, layer) {
   }
 }
 
-// Load GeoJSON and fit bounds
+// Load GeoJSON data and fit bounds
 function loadGeoJSON(url, layerGroup) {
-  console.log("Fetching:", url);
   fetch(url)
-    .then(response => {
-      console.log("Response:", response);
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-      console.log("Loaded GeoJSON:", data);
+      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
+      const minScore = Math.min(...allScores);
+      const maxScore = Math.max(...allScores);
+
+      // Dynamically update color scale domain
+      colorScale = colorScale.domain([minScore, maxScore]);
+
       const layer = L.geoJSON(data, {
         style: style,
         onEachFeature: onEachFeature
@@ -85,30 +86,26 @@ loadGeoJSON(scenario3Url, scenario3Layer);
 // Show scenario 1 by default
 scenario1Layer.addTo(map);
 
-// Overlay control (scenarios only)
+// Overlay toggle (only for scenarios)
 const overlayMaps = {
   'Scenario 1: All Buildings': scenario1Layer,
   'Scenario 2: Slope Categorized': scenario2Layer,
   'Scenario 3: Excluding Industrial': scenario3Layer
 };
 
+// Legend (bottom left)
 const legend = L.control({ position: 'bottomleft' });
-
 legend.onAdd = function () {
-    const div = L.DomUtil.create('div', 'info legend');
-    const grades = [0, 0.2, 0.4, 0.6, 0.8, 1];
-
-    div.innerHTML += '<b>Greening Score</b><br>';
-    for (let i = 0; i < grades.length - 1; i++) {
-        const color = colorScale((grades[i] + grades[i+1]) / 2).hex();
-        div.innerHTML +=
-            `<i style="background:${color}"></i> ${grades[i]} – ${grades[i+1]}<br>`;
-    }
-    return div;
+  const div = L.DomUtil.create('div', 'info legend');
+  const grades = [0, 0.2, 0.4, 0.6, 0.8, 1];
+  div.innerHTML += '<b>Greening Score</b><br>';
+  for (let i = 0; i < grades.length - 1; i++) {
+    const color = getColor((grades[i] + grades[i + 1]) / 2);
+    div.innerHTML += `<i style="background:${color}"></i> ${grades[i]} – ${grades[i + 1]}<br>`;
+  }
+  return div;
 };
-
 legend.addTo(map);
 
-
-L.control.layers(null, overlayMaps).addTo(map); // 🧼 Base layer removed from here
-
+// Scenario switcher
+L.control.layers(null, overlayMaps).addTo(map);
