@@ -62,7 +62,7 @@ function loadGeoJSON(url, layerGroup) {
             }).addTo(layerGroup);
 
             map.fitBounds(layer.getBounds());
-        }) // ✅ ← this was missing!
+        }) // ← this was missing!
         .catch(err => console.error('Error loading GeoJSON data:', err));
 }
 
