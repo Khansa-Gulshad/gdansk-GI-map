@@ -24,46 +24,44 @@ html, body {
   margin-right: 8px;
   opacity: 0.9;
 }
-.info-panel {
+#info-panel {
   position: absolute;
-  top: 30px;
-  left: 30px;
-  width: 330px;
-  background: rgba(0, 0, 0, 0.9);
-  color: #f0f0f0;
-  padding: 20px;
+  top: 0;
+  left: 0;
   z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+#info-content {
+  background: #222;
   border-radius: 10px;
-  font-family: 'Arial', sans-serif;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  padding: 30px;
+  max-width: 600px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.info-panel h2 {
+#info-content h2 {
   margin-top: 0;
-  font-size: 20px;
-}
-
-.info-panel ul {
-  margin-left: 15px;
-}
-
-.info-panel .disclaimer {
-  font-size: 12px;
-  color: #fca311;
-  margin-top: 10px;
 }
 
 #close-btn {
-  margin-top: 15px;
-  padding: 8px 16px;
-  background-color: #0d6efd;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #00b894;
   border: none;
   color: white;
   font-weight: bold;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
 #close-btn:hover {
-  background-color: #0b5ed7;
+  background: #019875;
 }
