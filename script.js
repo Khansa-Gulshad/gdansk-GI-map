@@ -1,5 +1,5 @@
 // Initialize the map without setting a specific view
-const map = L.map('map');
+const map = L.map('map').setView([54.352, 18.6466], 13); // Gdańsk center
 
 // Define the OSM base layer
 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
