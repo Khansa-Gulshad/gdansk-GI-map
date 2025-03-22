@@ -59,8 +59,8 @@ function loadGeoJSON(url, layerGroup) {
                 onEachFeature: onEachFeature
             }).addTo(layerGroup);
 
-            // Auto-zoom to the bounds of the layer
             map.fitBounds(layer.getBounds());
+        }) // ✅ ← this was missing!
         .catch(err => console.error('Error loading GeoJSON data:', err));
 }
 
