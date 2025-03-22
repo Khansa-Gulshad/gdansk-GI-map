@@ -18,13 +18,13 @@ const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Color scale based on GPS_roof score
-function getColor(d) {
-  return d > 0.8 ? '#1a9641' :
-         d > 0.6 ? '#a6d96a' :
-         d > 0.4 ? '#ffffbf' :
-         d > 0.2 ? '#fdae61' :
-                   '#d7191c';
+/ Create a color scale from red (low) to green (high)
+const colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']).domain([0, 1]);
+
+function getColor(score) {
+    return colorScale(score).hex(); // returns color like "#a3f56b"
 }
+
 
 // Style function for each feature
 function style(feature) {
