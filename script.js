@@ -1,11 +1,6 @@
 // Initialize the map without setting a specific view
 const map = L.map('map').setView([54.352, 18.6466], 13); // Gdańsk center
 
-// Define the OSM base layer
-const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-});
-
 // Define the Mapbox dark theme base layer
 const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw', {
   tileSize: 512,
@@ -14,13 +9,7 @@ const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v1
 });
 
 // Add the OSM layer to the map by default
-osmLayer.addTo(map);
-
-// Create an object to hold the base layers
-const baseMaps = {
-    'OpenStreetMap': osmLayer,
-    'Mapbox Dark': mapboxLayer
-};
+mapboxLayer.addTo(map);
 
 // Define the URLs for the GeoJSON files
 //  Correct repo URL
@@ -107,5 +96,4 @@ var overlayMaps = {
     'Scenario 3: Excluding Industrial': scenario3Layer
 };
 
-// Add the layer control to the map
-L.control.layers(baseMaps, overlayMaps).addTo(map);
+
