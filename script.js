@@ -16,18 +16,16 @@ var scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Define a function to get color based on GPS_roof value
 function getColor(d) {
-    return d > 0.8 ? '#1a9641' :
-           d > 0.6 ? '#a6d96a' :
-           d > 0.4 ? '#ffffbf' :
-           d > 0.2 ? '#fdae61' :
-                    '#d7191c';
+    return d > 0.8 ? '#1a9641' :   // very high (dark green)
+           d > 0.6 ? '#a6d96a' :   // high (light green)
+           d > 0.4 ? '#ffffbf' :   // medium (yellow)
+           d > 0.2 ? '#fdae61' :   // low (orange)
+                      '#d7191c';   // very low (red)
 }
 
 // Define a function to style each feature
 function style(feature) {
     const score = feature.properties.GPS_roof;
-    console.log('GPS_roof:', score); // Add this line!
-
     return {
         fillColor: getColor(score),
         weight: 0,
