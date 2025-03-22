@@ -35,7 +35,7 @@ function style(feature) {
   };
 }
 
-// Popup function to display information about each building
+// Popup for each feature
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     layer.bindPopup(
@@ -99,28 +99,25 @@ const overlayMaps = {
 };
 
 // Create the legend for greening score
-let legend = L.control({ position: 'bottomleft' });
-
-let currentMin = 0;
-let currentMax = 1;
-
 legend.onAdd = function () {
   const div = L.DomUtil.create('div', 'info legend');
-  const steps = 5;
+  const steps = 5; // Number of color steps
   const stepSize = (currentMax - currentMin) / steps;
 
   div.innerHTML += '<b>Greening Score</b><br>';
 
+  // Create the legend based on the dynamic range
   for (let i = 0; i < steps; i++) {
     const from = (currentMin + stepSize * i).toFixed(2);
     const to = (currentMin + stepSize * (i + 1)).toFixed(2);
-    const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
+    const color = getColor((parseFloat(from) + parseFloat(to)) / 2); // Get color for the middle of the range
 
-    div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
+    div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`; // Display the color range
   }
 
   return div;
 };
+
 
 legend.addTo(map);
 
