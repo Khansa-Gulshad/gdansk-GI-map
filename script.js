@@ -1,12 +1,26 @@
-// map.js
+// Initialize the map without setting a specific view
+const map = L.map('map');
 
-// Initialize the map
-const map = L.map('map'); // Don’t set view yet — we’ll fit it dynamically
-
-// Add OSM base tile layer
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// Define the OSM base layer
+const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+});
+
+// Define the Mapbox dark theme base layer
+const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox/dark-v10', // Mapbox dark theme style ID
+    accessToken: 'YOUR_MAPBOX_ACCESS_TOKEN' // Replace with your Mapbox access token
+});
+
+// Add the OSM layer to the map by default
+osmLayer.addTo(map);
+
+// Create an object to hold the base layers
+const baseMaps = {
+    'OpenStreetMap': osmLayer,
+    'Mapbox Dark': mapboxLayer
+};
 
 // Define the URLs for the GeoJSON files
 //  Correct repo URL
@@ -93,4 +107,5 @@ var baseMaps = {
     'Scenario 3: Excluding Industrial': scenario3Layer
 };
 
+// Add the layer control to the map
 L.control.layers(baseMaps).addTo(map);
