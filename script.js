@@ -7,10 +7,10 @@ const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
 });
 
 // Define the Mapbox dark theme base layer
-const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw}', {
+const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={pk.ey...}', {
     attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox/dark-v10', // Mapbox dark theme style ID
-    accessToken: 'YOUR_MAPBOX_ACCESS_TOKEN' // Replace with your Mapbox access token
+    id: 'mapbox/dark-v10',
+    accessToken: 'pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw'
 });
 
 // Add the OSM layer to the map by default
@@ -101,7 +101,7 @@ loadGeoJSON(scenario3Url, scenario3Layer);
 scenario1Layer.addTo(map);
 
 // Add layer control to switch between scenarios
-var baseMaps = {
+var overlayMaps = {
     'Scenario 1: All Buildings': scenario1Layer,
     'Scenario 2: Slope Categorized': scenario2Layer,
     'Scenario 3: Excluding Industrial': scenario3Layer
