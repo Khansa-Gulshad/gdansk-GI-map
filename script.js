@@ -108,4 +108,4 @@ var overlayMaps = {
 };
 
 // Add the layer control to the map
-L.control.layers(baseMaps).addTo(map);
+L.control.layers(baseMaps, overlayMaps).addTo(map);
