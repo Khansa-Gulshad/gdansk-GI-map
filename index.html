@@ -1,29 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Green Roofs Potential Map</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <!-- Your custom styles -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>Green Roofs Potential - Gdańsk</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+  </style>
 </head>
 <body>
-    <div id="map"></div>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <!-- Load the GeoJSON data and initialize the map -->
-    <script src="script.js"></script>
-<div id="legend">
-    <h4>Greening Score</h4>
-    <i style="background: #1a9641"></i> > 0.8<br>
-    <i style="background: #a6d96a"></i> 0.6 – 0.8<br>
-    <i style="background: #ffffbf"></i> 0.4 – 0.6<br>
-    <i style="background: #fdae61"></i> 0.2 – 0.4<br>
-    <i style="background: #d7191c"></i> ≤ 0.2<br>
-</div>
+  <div id="map"></div>
+  <script src="app.js"></script> <!-- ✅ LOAD YOUR JS FILE HERE -->
 </body>
 </html>
 
