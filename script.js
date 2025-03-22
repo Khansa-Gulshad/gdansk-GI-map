@@ -123,6 +123,44 @@ legend.onAdd = function () {
 
 legend.addTo(map);
 
+// Custom scenario control buttons with icons
+L.control.custom({
+    position: 'topright',
+    content: `
+        <div class="leaflet-bar">
+            <button class="leaflet-bar-btn" id="scenario1-btn"><i class="fas fa-map"></i> Scenario 1</button>
+            <button class="leaflet-bar-btn" id="scenario2-btn"><i class="fas fa-layer-group"></i> Scenario 2</button>
+            <button class="leaflet-bar-btn" id="scenario3-btn"><i class="fas fa-industry"></i> Scenario 3</button>
+        </div>
+    `,
+    classes: 'leaflet-control-custom',
+    events: {
+        mouseover: function () {},
+        mouseout: function () {}
+    }
+}).addTo(map);
+
+// Switch to Scenario 1 when button clicked
+document.getElementById('scenario1-btn').addEventListener('click', function () {
+    map.removeLayer(scenario2Layer);
+    map.removeLayer(scenario3Layer);
+    scenario1Layer.addTo(map);
+});
+
+// Switch to Scenario 2 when button clicked
+document.getElementById('scenario2-btn').addEventListener('click', function () {
+    map.removeLayer(scenario1Layer);
+    map.removeLayer(scenario3Layer);
+    scenario2Layer.addTo(map);
+});
+
+// Switch to Scenario 3 when button clicked
+document.getElementById('scenario3-btn').addEventListener('click', function () {
+    map.removeLayer(scenario1Layer);
+    map.removeLayer(scenario2Layer);
+    scenario3Layer.addTo(map);
+});
+
 // Scenario switcher
 L.control.layers(null, overlayMaps).addTo(map);
 
@@ -131,4 +169,5 @@ document.getElementById('close-btn').addEventListener('click', function () {
   const panel = document.getElementById('info-panel');
   panel.style.display = 'none';
 });
+
 
