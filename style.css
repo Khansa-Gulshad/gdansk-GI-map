@@ -24,3 +24,46 @@ html, body {
   margin-right: 8px;
   opacity: 0.9;
 }
+.info-panel {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 330px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #f0f0f0;
+  padding: 20px;
+  z-index: 1000;
+  border-radius: 10px;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.info-panel h2 {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.info-panel ul {
+  margin-left: 15px;
+}
+
+.info-panel .disclaimer {
+  font-size: 12px;
+  color: #fca311;
+  margin-top: 10px;
+}
+
+#close-btn {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background-color: #0d6efd;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#close-btn:hover {
+  background-color: #0b5ed7;
+}
