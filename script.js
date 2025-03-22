@@ -1,60 +1,86 @@
-// 1) Initialize Leaflet map & set initial view on Gdańsk
-var map = L.map('map').setView([54.347629, 18.646638], 10);
+// map.js
 
-// 2) Add a Mapbox Dark base layer
-var mapboxDark = L.tileLayer(
-  'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
-  {
-    attribution: 'Map data &copy; OpenStreetMap contributors, Imagery © Mapbox',
-    tileSize: 512,
-    zoomOffset: -1
-  }
-).addTo(map);
+// Initialize the map
+var map = L.map('map').setView([51.9194, 19.1451], 6); // Centered over Poland
 
-// OPTIONAL OSM fallback:
-// var osmLayer = L.tileLayer(
-//   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-//   { attribution: 'Map data © OpenStreetMap contributors' }
-// ).addTo(map);
+// Add OSM base tile layer
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
 
-// 3) Define a color scale function
-function getColor(value) {
-  // Adjust thresholds & colors as desired
-  return value >= 20 ? '#006837' :
-         value >= 15 ? '#31a354' :
-         value >= 10 ? '#78c679' :
-         value >= 5  ? '#c2e699' :
-                       '#ffffcc';
+// Define the URLs for the GeoJSON files
+var scenario1Url = 'https://raw.githubusercontent.com/Khansa-Gulshad/Green-roofs-GPS/main/filtered_buildings_scenario1.geojson';
+var scenario2Url = 'https://raw.githubusercontent.com/Khansa-Gulshad/Green-roofs-GPS/main/filtered_buildings_scenario2.geojson';
+var scenario3Url = 'https://raw.githubusercontent.com/Khansa-Gulshad/Green-roofs-GPS/main/filtered_buildings_scenario3.geojson';
+
+// Define a function to get color based on GPS_roof value
+function getColor(d) {
+    return d > 80 ? '#1a9641' :
+           d > 60 ? '#a6d96a' :
+           d > 40 ? '#ffffbf' :
+           d > 20 ? '#fdae61' :
+                    '#d7191c';
 }
 
-// 4) Style function for polygons
+// Define a function to style each feature
 function style(feature) {
-  var val = feature.properties.suitable_area_percentage1;
-  return {
-    fillColor: getColor(val),
-    fillOpacity: 0.7,
-    color: '#333',
-    weight: 1
-  };
+    return {
+        fillColor: getColor(feature.properties.GPS_roof),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
 }
 
-// 5) Popup callback
+// Define a function to bind popups to each feature
 function onEachFeature(feature, layer) {
-  var districtName = feature.properties.District;
-  var areaValue = feature.properties.suitable_area_percentage1;
-  layer.bindPopup(
-    '<b>District:</b> ' + districtName + '<br>' +
-    'Green Roof Potential: ' + areaValue + '%'
-  );
+    if (feature.properties) {
+        layer.bindPopup(
+            '<b>Building ID:</b> ' + feature.properties.id + '<br>' +
+            '<b>Greening Potential Score:</b> ' + feature.properties.GPS_roof + '<br>' +
+            '<b>Slope:</b> ' + feature.properties.Slope + '<br>' +
+            '<b>Height:</b> ' + feature.properties.Height + '<br>' +
+            '<b>Area:</b> ' + feature.properties.Area1 + '<br>' +
+            '<b>Shape Ratio:</b> ' + feature.properties.shape_ratio + '<br>' +
+            (feature.properties.slope_category ? '<b>Slope Category:</b> ' + feature.properties.slope_category + '<br>' : '') +
+            (feature.properties.slope_score ? '<b>Slope Score:</b> ' + feature.properties.slope_score + '<br>' : '')
+        );
+    }
 }
 
-// 6) Load your GeoJSON
-fetch('combined_gdansk_districts_roof.geojson')
-  .then(response => response.json())
-  .then(data => {
-    L.geoJSON(data, {
-      style: style,
-      onEachFeature: onEachFeature
-    }).addTo(map);
-  })
-  .catch(err => console.error('Error loading GeoJSON:', err));
+// Function to load GeoJSON data and add to the map
+function loadGeoJSON(url, layerGroup) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: style,
+                onEachFeature: onEachFeature
+            }).addTo(layerGroup);
+        })
+        .catch(err => console.error('Error loading GeoJSON data:', err));
+}
+
+// Create layer groups for each scenario
+var scenario1Layer = L.layerGroup();
+var scenario2Layer = L.layerGroup();
+var scenario3Layer = L.layerGroup();
+
+// Load GeoJSON data into respective layer groups
+loadGeoJSON(scenario1Url, scenario1Layer);
+loadGeoJSON(scenario2Url, scenario2Layer);
+loadGeoJSON(scenario3Url, scenario3Layer);
+
+// Add scenario 1 layer to the map by default
+scenario1Layer.addTo(map);
+
+// Add layer control to switch between scenarios
+var baseMaps = {
+    'Scenario 1: All Buildings': scenario1Layer,
+    'Scenario 2: Slope Categorized': scenario2Layer,
+    'Scenario 3: Excluding Industrial': scenario3Layer
+};
+
+L.control.layers(baseMaps).addTo(map);
