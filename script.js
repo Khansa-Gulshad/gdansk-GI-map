@@ -96,20 +96,19 @@ const legend = L.control({ position: 'bottomleft' });
 
 legend.onAdd = function () {
     const div = L.DomUtil.create('div', 'info legend');
-    const grades = [0, 0.2, 0.4, 0.6, 0.8];
-    const labels = [];
+    const grades = [0, 0.2, 0.4, 0.6, 0.8, 1];
 
     div.innerHTML += '<b>Greening Score</b><br>';
-
-    for (let i = 0; i < grades.length; i++) {
+    for (let i = 0; i < grades.length - 1; i++) {
+        const color = colorScale((grades[i] + grades[i+1]) / 2).hex();
         div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 0.01) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? ' &ndash; ' + grades[i + 1] + '<br>' : '+');
+            `<i style="background:${color}"></i> ${grades[i]} – ${grades[i+1]}<br>`;
     }
-
     return div;
 };
 
 legend.addTo(map);
+
+
 L.control.layers(null, overlayMaps).addTo(map); // 🧼 Base layer removed from here
 
