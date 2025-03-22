@@ -94,5 +94,24 @@ const overlayMaps = {
   'Scenario 3: Excluding Industrial': scenario3Layer
 };
 
+const legend = L.control({ position: 'bottomleft' });
+
+legend.onAdd = function () {
+    const div = L.DomUtil.create('div', 'info legend');
+    const grades = [0, 0.2, 0.4, 0.6, 0.8];
+    const labels = [];
+
+    div.innerHTML += '<b>Greening Score</b><br>';
+
+    for (let i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(grades[i] + 0.01) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? ' &ndash; ' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+};
+
+legend.addTo(map);
 L.control.layers(null, overlayMaps).addTo(map); // 🧼 Base layer removed from here
 
