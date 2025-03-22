@@ -1,7 +1,7 @@
 // map.js
 
 // Initialize the map
-var map = L.map('map').setView([51.9194, 19.1451], 6); // Centered over Poland
+const map = L.map('map'); // Don’t set view yet — we’ll fit it dynamically
 
 // Add OSM base tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -28,9 +28,7 @@ function style(feature) {
     return {
         fillColor: getColor(feature.properties.GPS_roof),
         weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
+        color: 'transparent',
         fillOpacity: 0.7
     };
 }
@@ -56,11 +54,13 @@ function loadGeoJSON(url, layerGroup) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            L.geoJSON(data, {
+            const layer = L.geoJSON(data, {
                 style: style,
                 onEachFeature: onEachFeature
             }).addTo(layerGroup);
-        })
+
+            // Auto-zoom to the bounds of the layer
+            map.fitBounds(layer.getBounds());
         .catch(err => console.error('Error loading GeoJSON data:', err));
 }
 
