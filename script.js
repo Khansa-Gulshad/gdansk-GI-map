@@ -51,7 +51,7 @@ function onEachFeature(feature, layer) {
   }
 }
 
-// Load GeoJSON data dynamically and update the layers
+// Load GeoJSON data and fit bounds
 function loadGeoJSON(url, layerGroup) {
   fetch(url)
     .then(response => response.json()) // Fetch the GeoJSON data
@@ -99,36 +99,30 @@ const overlayMaps = {
 };
 
 // Create the legend for greening score
-// Load GeoJSON data and update the range
-function loadGeoJSON(url, layerGroup) {
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
-      const minScore = Math.min(...allScores);
-      const maxScore = Math.max(...allScores);
+let legend = L.control({ position: 'bottomleft' });
 
-      // Dynamically update color scale domain
-      colorScale = colorScale.domain([minScore, maxScore]);
+// Keep reference to latest data range
+let currentMin = 0;
+let currentMax = 1;
 
-      // Update the current range for the legend
-      currentMin = minScore;
-      currentMax = maxScore;
+legend.onAdd = function () {
+  const div = L.DomUtil.create('div', 'info legend');
+  const steps = 5;  // Number of legend steps
+  const stepSize = (currentMax - currentMin) / steps;  // Size of each step
 
-      // Remove and re-add the legend to update with the new range
-      legend.remove();   
-      legend.addTo(map); 
+  div.innerHTML += '<b>Greening Score</b><br>';  // Title for the legend
 
-      // Add GeoJSON layer to the map
-      const layer = L.geoJSON(data, {
-        style: style,
-        onEachFeature: onEachFeature
-      }).addTo(layerGroup);
+  for (let i = 0; i < steps; i++) {
+    const from = (currentMin + stepSize * i).toFixed(2);
+    const to = (currentMin + stepSize * (i + 1)).toFixed(2);
+    const color = getColor((parseFloat(from) + parseFloat(to)) / 2);  // Midpoint for color
 
-      map.fitBounds(layer.getBounds());
-    })
-    .catch(err => console.error('Error loading GeoJSON data:', err));
-}
+    // Add the color boxes and labels for the range
+    div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
+  }
+
+  return div;
+};
 
 legend.addTo(map);
 
