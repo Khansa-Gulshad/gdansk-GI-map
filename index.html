@@ -8,6 +8,24 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="info-panel" class="info-panel">
+  <h2>Green Roof Suitability</h2>
+  <p>
+    This interactive map visualizes the greening potential of rooftops in Gdańsk
+    based on slope, height, shape ratio, and area.
+  </p>
+  <ul>
+    <li><b>Scenario 1:</b> All filtered buildings, equal weight to all factors.</li>
+    <li><b>Scenario 2:</b> Categorized slopes (0–20°), lower slope = better.</li>
+    <li><b>Scenario 3:</b> Same as Scenario 1 but excludes industrial buildings.</li>
+  </ul>
+  <p class="disclaimer">
+    ⚠️ This analysis is based on static building features and does not account for dynamic
+    factors like structural integrity, climate impact, or ownership limitations.
+  </p>
+  <button id="close-btn">Explore the Map</button>
+</div>
+
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
