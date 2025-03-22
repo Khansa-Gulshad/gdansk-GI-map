@@ -25,11 +25,14 @@ function getColor(d) {
 
 // Define a function to style each feature
 function style(feature) {
+    const score = feature.properties.GPS_roof;
+    console.log('GPS_roof:', score); // DEBUGGING VALUE
+
     return {
-        fillColor: getColor(feature.properties.GPS_roof),
+        fillColor: getColor(score),
         weight: 0,
         color: 'transparent',
-        fillOpacity: 0.7
+        fillOpacity: 0.9 // Make it more visible
     };
 }
 
