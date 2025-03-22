@@ -99,6 +99,7 @@ const overlayMaps = {
 };
 
 // Create the legend for greening score
+// legend
 let legend = L.control({ position: 'bottomleft' });
 
 // Keep reference to latest data range
@@ -107,17 +108,16 @@ let currentMax = 1;
 
 legend.onAdd = function () {
   const div = L.DomUtil.create('div', 'info legend');
-  const steps = 5;  // Number of legend steps
-  const stepSize = (currentMax - currentMin) / steps;  // Size of each step
+  const steps = 5;
+  const stepSize = (currentMax - currentMin) / steps;
 
-  div.innerHTML += '<b>Greening Score</b><br>';  // Title for the legend
+  div.innerHTML += '<b>Greening Score</b><br>';
 
   for (let i = 0; i < steps; i++) {
     const from = (currentMin + stepSize * i).toFixed(2);
     const to = (currentMin + stepSize * (i + 1)).toFixed(2);
-    const color = getColor((parseFloat(from) + parseFloat(to)) / 2);  // Midpoint for color
+    const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
 
-    // Add the color boxes and labels for the range
     div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
   }
 
