@@ -99,25 +99,36 @@ const overlayMaps = {
 };
 
 // Create the legend for greening score
-legend.onAdd = function () {
-  const div = L.DomUtil.create('div', 'info legend');
-  const steps = 5; // Number of color steps
-  const stepSize = (currentMax - currentMin) / steps;
+// Load GeoJSON data and update the range
+function loadGeoJSON(url, layerGroup) {
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
+      const minScore = Math.min(...allScores);
+      const maxScore = Math.max(...allScores);
 
-  div.innerHTML += '<b>Greening Score</b><br>';
+      // Dynamically update color scale domain
+      colorScale = colorScale.domain([minScore, maxScore]);
 
-  // Create the legend based on the dynamic range
-  for (let i = 0; i < steps; i++) {
-    const from = (currentMin + stepSize * i).toFixed(2);
-    const to = (currentMin + stepSize * (i + 1)).toFixed(2);
-    const color = getColor((parseFloat(from) + parseFloat(to)) / 2); // Get color for the middle of the range
+      // Update the current range for the legend
+      currentMin = minScore;
+      currentMax = maxScore;
 
-    div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`; // Display the color range
-  }
+      // Remove and re-add the legend to update with the new range
+      legend.remove();   
+      legend.addTo(map); 
 
-  return div;
-};
+      // Add GeoJSON layer to the map
+      const layer = L.geoJSON(data, {
+        style: style,
+        onEachFeature: onEachFeature
+      }).addTo(layerGroup);
 
+      map.fitBounds(layer.getBounds());
+    })
+    .catch(err => console.error('Error loading GeoJSON data:', err));
+}
 
 legend.addTo(map);
 
