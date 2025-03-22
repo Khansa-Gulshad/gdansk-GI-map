@@ -125,3 +125,10 @@ legend.addTo(map);
 
 // Scenario switcher
 L.control.layers(null, overlayMaps).addTo(map);
+
+// Info Panel Close Button
+document.getElementById('close-btn').addEventListener('click', function () {
+  const panel = document.getElementById('info-panel');
+  panel.style.display = 'none';
+});
+
