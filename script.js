@@ -27,7 +27,7 @@ function getColor(d) {
 function style(feature) {
     return {
         fillColor: getColor(feature.properties.GPS_roof),
-        weight: 2,
+        weight: 0,
         color: 'transparent',
         fillOpacity: 0.7
     };
