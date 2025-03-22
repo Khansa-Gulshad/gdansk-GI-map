@@ -124,21 +124,22 @@ legend.onAdd = function () {
 legend.addTo(map);
 
 // Custom scenario control buttons with icons
-L.control.custom({
-    position: 'topright',
-    content: `
-        <div class="leaflet-bar">
+const scenarioControl = L.Control.extend({
+    options: {
+        position: 'topright'
+    },
+    onAdd: function () {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        container.innerHTML = `
             <button class="leaflet-bar-btn" id="scenario1-btn"><i class="fas fa-map"></i> Scenario 1</button>
             <button class="leaflet-bar-btn" id="scenario2-btn"><i class="fas fa-layer-group"></i> Scenario 2</button>
             <button class="leaflet-bar-btn" id="scenario3-btn"><i class="fas fa-industry"></i> Scenario 3</button>
-        </div>
-    `,
-    classes: 'leaflet-control-custom',
-    events: {
-        mouseover: function () {},
-        mouseout: function () {}
+        `;
+        return container;
     }
-}).addTo(map);
+});
+
+map.addControl(new scenarioControl());
 
 // Switch to Scenario 1 when button clicked
 document.getElementById('scenario1-btn').addEventListener('click', function () {
@@ -169,5 +170,4 @@ document.getElementById('close-btn').addEventListener('click', function () {
   const panel = document.getElementById('info-panel');
   panel.style.display = 'none';
 });
-
 
