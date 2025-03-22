@@ -62,7 +62,10 @@ function loadGeoJSON(url, layerGroup) {
 
       // Dynamically update color scale domain
       colorScale = colorScale.domain([minScore, maxScore]);
-
+      currentMin = minScore;
+      currentMax = maxScore;
+      legend.remove();   // Remove previous legend
+      legend.addTo(map); // Add updated one
       const layer = L.geoJSON(data, {
         style: style,
         onEachFeature: onEachFeature
@@ -93,18 +96,31 @@ const overlayMaps = {
   'Scenario 3: Excluding Industrial': scenario3Layer
 };
 
-// Legend (bottom left)
-const legend = L.control({ position: 'bottomleft' });
+// legend
+let legend = L.control({ position: 'bottomleft' });
+
+// Keep reference to latest data range
+let currentMin = 0;
+let currentMax = 1;
+
 legend.onAdd = function () {
   const div = L.DomUtil.create('div', 'info legend');
-  const grades = [0, 0.2, 0.4, 0.6, 0.8, 1];
+  const steps = 5;
+  const stepSize = (currentMax - currentMin) / steps;
+
   div.innerHTML += '<b>Greening Score</b><br>';
-  for (let i = 0; i < grades.length - 1; i++) {
-    const color = getColor((grades[i] + grades[i + 1]) / 2);
-    div.innerHTML += `<i style="background:${color}"></i> ${grades[i]} – ${grades[i + 1]}<br>`;
+
+  for (let i = 0; i < steps; i++) {
+    const from = (currentMin + stepSize * i).toFixed(2);
+    const to = (currentMin + stepSize * (i + 1)).toFixed(2);
+    const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
+
+    div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
   }
+
   return div;
 };
+
 legend.addTo(map);
 
 // Scenario switcher
