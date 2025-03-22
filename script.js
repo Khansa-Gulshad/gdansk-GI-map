@@ -16,10 +16,10 @@ var scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Define a function to get color based on GPS_roof value
 function getColor(d) {
-    return d > 80 ? '#1a9641' :
-           d > 60 ? '#a6d96a' :
-           d > 40 ? '#ffffbf' :
-           d > 20 ? '#fdae61' :
+    return d > 0.8 ? '#1a9641' :
+           d > 0.6 ? '#a6d96a' :
+           d > 0.4 ? '#ffffbf' :
+           d > 0.2 ? '#fdae61' :
                     '#d7191c';
 }
 
