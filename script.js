@@ -53,16 +53,23 @@ function onEachFeature(feature, layer) {
 
 // Function to load GeoJSON data and add to the map
 function loadGeoJSON(url, layerGroup) {
+    console.log("Fetching:", url); // Add this log!
+
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            console.log("Response:", response); // See if it’s OK
+            return response.json();
+        })
         .then(data => {
+            console.log("Loaded GeoJSON:", data); //  Confirm it loaded
+
             const layer = L.geoJSON(data, {
                 style: style,
                 onEachFeature: onEachFeature
             }).addTo(layerGroup);
 
             map.fitBounds(layer.getBounds());
-        }) // ← this was missing!
+        })
         .catch(err => console.error('Error loading GeoJSON data:', err));
 }
 
