@@ -1,64 +1,67 @@
-// Initialize the map
-var map = L.map('map').setView([54.3520, 18.6466], 12); // Center on Gdańsk
+// 1) Initialize Leaflet map & set initial view on Gdańsk
+var map = L.map('map').setView([54.347629, 18.646638], 10);
 
-// Add Mapbox black theme as the base layer
-L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw', {
-    attribution: '© <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18,
+// 2) Add a Mapbox Dark base layer
+//    Replace "YOUR_MAPBOX_ACCESS_TOKEN" with your actual token
+var mapboxDark = L.tileLayer(
+  'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}@2x?access_token=
+pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
+  {
+    attribution: 'Map data &copy; OpenStreetMap contributors, Imagery © Mapbox',
     tileSize: 512,
     zoomOffset: -1
-}).addTo(map);
+  }
+).addTo(map);
 
-// Function to get color based on suitable_area_percentage_1
-function getColor(percentage) {
-    return percentage > 15 ? '#00441b' :
-           percentage > 10 ? '#238b45' :
-           percentage > 5 ? '#41ab5d' :
-           percentage > 0 ? '#74c476' :
-                             '#d9f0a3';
+// -------------------------------------
+// (If you prefer OSM tiles as a fallback or alternative, 
+//  comment out Mapbox and uncomment the next part)
+//
+// var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//   attribution: 'Map data © OpenStreetMap contributors'
+// }).addTo(map);
+// -------------------------------------
+
+// 3) Define a color scale function for suitable_area_percentage1
+function getColor(value) {
+  // Adjust thresholds & colors as desired
+  return value >= 20 ? '#006837' :
+         value >= 15  ? '#31a354' :
+         value >= 10  ? '#78c679' :
+         value >= 5  ? '#c2e699' :
+         value >= 0  ? '#ffffcc';
 }
 
-// Load districts GeoJSON data
-fetch('https://raw.githubusercontent.com/Khansa-Gulshad/gdansk-green-roofs/main/combined_gdansk_districts_roof.geojson')
-    .then(response => response.json())
-    .then(data => {
-        // Add districts layer to the map
-        L.geoJSON(data, {
-            style: function(feature) {
-                return {
-                    fillColor: getColor(feature.properties.suitable_area_percentage_1),
-                    weight: 1,
-                    opacity: 1,
-                    color: 'white',
-                    fillOpacity: 0.7
-                };
-            },
-            onEachFeature: function(feature, layer) {
-                // Add popup with district name and suitable area percentage
-                layer.bindPopup(`
-                    <b>District:</b> ${feature.properties.District}<br>
-                    <b>Suitable Area (%):</b> ${feature.properties.suitable_area_percentage_1}%
-                `);
-            }
-        }).addTo(map);
-    });
+// 4) Style function that returns Leaflet path options
+function style(feature) {
+  var val = feature.properties.suitable_area_percentage1;
+  return {
+    fillColor: getColor(val),
+    fillOpacity: 0.7,
+    color: '#333',    // outline color
+    weight: 1,
+    opacity: 1
+  };
+}
 
-// Add a legend
-var legend = L.control({ position: 'bottomright' });
+// 5) onEachFeature callback: bind a popup with District + suitable area
+function onEachFeature(feature, layer) {
+  var districtName = feature.properties.District;
+  var areaValue = feature.properties.suitable_area_percentage1;
+  layer.bindPopup(
+    '<b>District:</b> ' + districtName + '<br>' +
+    'Green Roof Potential: ' + areaValue + '%'
+  );
+}
 
-legend.onAdd = function(map) {
-    var div = L.DomUtil.create('div', 'legend');
-    div.innerHTML = `
-        <h4>Suitable Area (%)</h4>
-        <div><span style="background:#00441b"></span> > 15%</div>
-        <div><span style="background:#238b45"></span> 10-15%</div>
-        <div><span style="background:#41ab5d"></span> 5-10%</div>
-        <div><span style="background:#74c476"></span> 2-5%</div>
-        <div><span style="background:#d9f0a3"></span> < 2%</div>
-    `;
-    return div;
-};
-
-legend.addTo(map);
-
+// 6) Load and add your local GeoJSON (adjust path/filename if needed)
+fetch('combined_gdansk_districts_roof.geojson')
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: style,
+      onEachFeature: onEachFeature
+    }).addTo(map);
+  })
+  .catch(err => console.error('Error loading GeoJSON:', err));
 
