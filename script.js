@@ -1,99 +1,98 @@
-// Initialize the map without setting a specific view
-const map = L.map('map').setView([54.352, 18.6466], 13); // Gdańsk center
+// Initialize the map centered on Gdańsk
+const map = L.map('map').setView([54.352, 18.6466], 13);
 
-// Define the Mapbox dark theme base layer
-const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw', {
-  tileSize: 512,
-  zoomOffset: -1,
-  attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-});
-
-// Add the OSM layer to the map by default
+// Add Mapbox dark tile layer
+const mapboxLayer = L.tileLayer(
+  'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
+  {
+    tileSize: 512,
+    zoomOffset: -1,
+    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>'
+  }
+);
 mapboxLayer.addTo(map);
 
-// Define the URLs for the GeoJSON files
-//  Correct repo URL
-var scenario1Url = 'filtered_buildings_scenario1.geojson';
-var scenario2Url = 'filtered_buildings_scenario2.geojson';
-var scenario3Url = 'filtered_buildings_scenario3.geojson';
+// GeoJSON scenario files
+const scenario1Url = 'filtered_buildings_scenario1.geojson';
+const scenario2Url = 'filtered_buildings_scenario2.geojson';
+const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
-// Define a function to get color based on GPS_roof value
+// Color scale based on GPS_roof score
 function getColor(d) {
-    return d > 0.8 ? '#1a9641' :   // very high (dark green)
-           d > 0.6 ? '#a6d96a' :   // high (light green)
-           d > 0.4 ? '#ffffbf' :   // medium (yellow)
-           d > 0.2 ? '#fdae61' :   // low (orange)
-                      '#d7191c';   // very low (red)
+  return d > 0.8 ? '#1a9641' :
+         d > 0.6 ? '#a6d96a' :
+         d > 0.4 ? '#ffffbf' :
+         d > 0.2 ? '#fdae61' :
+                   '#d7191c';
 }
 
-// Define a function to style each feature
+// Style function for each feature
 function style(feature) {
-    const score = feature.properties.GPS_roof;
-    console.log("GPS_roof:", score); // ← keep this for debug
-
-    return {
-        fillColor: getColor(score),
-        weight: 0,
-        color: 'transparent',
-        fillOpacity: 0.9
-    };
+  const score = feature.properties.GPS_roof;
+  console.log("GPS_roof:", score);
+  return {
+    fillColor: getColor(score),
+    weight: 0,
+    color: 'transparent',
+    fillOpacity: 0.9
+  };
 }
-// Define a function to bind popups to each feature
+
+// Popup binding function
 function onEachFeature(feature, layer) {
-    if (feature.properties) {
-        layer.bindPopup(
-            '<b>Building ID:</b> ' + feature.properties.id + '<br>' +
-            '<b>Greening Potential Score:</b> ' + feature.properties.GPS_roof + '<br>' +
-            '<b>Slope:</b> ' + feature.properties.Slope + '<br>' +
-            '<b>Height:</b> ' + feature.properties.Height + '<br>' +
-            '<b>Area:</b> ' + feature.properties.Area1 + '<br>' +
-            '<b>Shape Ratio:</b> ' + feature.properties.shape_ratio + '<br>' +
-            (feature.properties.slope_category ? '<b>Slope Category:</b> ' + feature.properties.slope_category + '<br>' : '') +
-            (feature.properties.slope_score ? '<b>Slope Score:</b> ' + feature.properties.slope_score + '<br>' : '')
-        );
-    }
+  if (feature.properties) {
+    layer.bindPopup(
+      `<b>Building ID:</b> ${feature.properties.id}<br>` +
+      `<b>Greening Potential Score:</b> ${feature.properties.GPS_roof}<br>` +
+      `<b>Slope:</b> ${feature.properties.Slope}<br>` +
+      `<b>Height:</b> ${feature.properties.Height}<br>` +
+      `<b>Area:</b> ${feature.properties.Area1}<br>` +
+      `<b>Shape Ratio:</b> ${feature.properties.shape_ratio}<br>` +
+      (feature.properties.slope_category ? `<b>Slope Category:</b> ${feature.properties.slope_category}<br>` : '') +
+      (feature.properties.slope_score ? `<b>Slope Score:</b> ${feature.properties.slope_score}<br>` : '')
+    );
+  }
 }
 
-// Function to load GeoJSON data and add to the map
+// Load GeoJSON and fit bounds
 function loadGeoJSON(url, layerGroup) {
-    console.log("Fetching:", url); // Add this log!
+  console.log("Fetching:", url);
+  fetch(url)
+    .then(response => {
+      console.log("Response:", response);
+      return response.json();
+    })
+    .then(data => {
+      console.log("Loaded GeoJSON:", data);
+      const layer = L.geoJSON(data, {
+        style: style,
+        onEachFeature: onEachFeature
+      }).addTo(layerGroup);
 
-    fetch(url)
-        .then(response => {
-            console.log("Response:", response); // See if it’s OK
-            return response.json();
-        })
-        .then(data => {
-            console.log("Loaded GeoJSON:", data); //  Confirm it loaded
-
-            const layer = L.geoJSON(data, {
-                style: style,
-                onEachFeature: onEachFeature
-            }).addTo(layerGroup);
-
-            map.fitBounds(layer.getBounds());
-        })
-        .catch(err => console.error('Error loading GeoJSON data:', err));
+      map.fitBounds(layer.getBounds());
+    })
+    .catch(err => console.error('Error loading GeoJSON data:', err));
 }
 
-// Create layer groups for each scenario
-var scenario1Layer = L.layerGroup();
-var scenario2Layer = L.layerGroup();
-var scenario3Layer = L.layerGroup();
+// Layer groups for each scenario
+const scenario1Layer = L.layerGroup();
+const scenario2Layer = L.layerGroup();
+const scenario3Layer = L.layerGroup();
 
-// Load GeoJSON data into respective layer groups
+// Load all scenarios
 loadGeoJSON(scenario1Url, scenario1Layer);
 loadGeoJSON(scenario2Url, scenario2Layer);
 loadGeoJSON(scenario3Url, scenario3Layer);
 
-// Add scenario 1 layer to the map by default
+// Show scenario 1 by default
 scenario1Layer.addTo(map);
 
-// Add layer control to switch between scenarios
-var overlayMaps = {
-    'Scenario 1: All Buildings': scenario1Layer,
-    'Scenario 2: Slope Categorized': scenario2Layer,
-    'Scenario 3: Excluding Industrial': scenario3Layer
+// Overlay control (scenarios only)
+const overlayMaps = {
+  'Scenario 1: All Buildings': scenario1Layer,
+  'Scenario 2: Slope Categorized': scenario2Layer,
+  'Scenario 3: Excluding Industrial': scenario3Layer
 };
 
+L.control.layers(null, overlayMaps).addTo(map); // 🧼 Base layer removed from here
 
