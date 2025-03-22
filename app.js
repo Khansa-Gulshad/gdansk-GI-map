@@ -8,53 +8,75 @@ const map = new mapboxgl.Map({
 });
 
 map.on('load', () => {
-  map.addSource('buildings', {
-    type: 'geojson',
-    data: 'filtered_buildings_scenario1.geojson'
-  });
+  let currentLayerId = null;
 
-  map.addLayer({
-    id: 'buildings-layer',
-    type: 'fill',
-    source: 'buildings',
-    paint: {
-      'fill-color': [
-        'interpolate',
-        ['linear'],
-        ['get', 'GPS_roof'],
-        0, '#d7191c',
-        0.2, '#fdae61',
-        0.4, '#ffffbf',
-        0.6, '#a6d96a',
-        0.8, '#1a9641'
-      ],
-      'fill-opacity': 0.8
-    }
-  });
+  const loadScenario = (url) => {
+    // Remove old source/layers
+    if (map.getLayer('buildings-layer')) map.removeLayer('buildings-layer');
+    if (map.getLayer('borders')) map.removeLayer('borders');
+    if (map.getSource('buildings')) map.removeSource('buildings');
 
-  map.addLayer({
-    id: 'borders',
-    type: 'line',
-    source: 'buildings',
-    paint: {
-      'line-color': '#111',
-      'line-width': 0.5
-    }
-  });
+    map.addSource('buildings', {
+      type: 'geojson',
+      data: url
+    });
 
-  map.on('click', 'buildings-layer', (e) => {
-    const props = e.features[0].properties;
-    new mapboxgl.Popup()
-      .setLngLat(e.lngLat)
-      .setHTML(`<b>ID:</b> ${props.id}<br><b>GPS:</b> ${props.GPS_roof}`)
-      .addTo(map);
-  });
+    map.addLayer({
+      id: 'buildings-layer',
+      type: 'fill',
+      source: 'buildings',
+      paint: {
+        'fill-color': [
+          'interpolate',
+          ['linear'],
+          ['get', 'GPS_roof'],
+          0, '#d7191c',
+          0.2, '#fdae61',
+          0.4, '#ffffbf',
+          0.6, '#a6d96a',
+          0.8, '#1a9641'
+        ],
+        'fill-opacity': 0.8
+      }
+    });
 
-  map.on('mouseenter', 'buildings-layer', () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
+    map.addLayer({
+      id: 'borders',
+      type: 'line',
+      source: 'buildings',
+      paint: {
+        'line-color': '#111',
+        'line-width': 0.5
+      }
+    });
+  };
 
-  map.on('mouseleave', 'buildings-layer', () => {
-    map.getCanvas().style.cursor = '';
-  });
+  // Load initial scenario
+  loadScenario('filtered_buildings_scenario1.geojson');
+
+  // Add dropdown
+  const select = document.createElement('select');
+  select.style.position = 'absolute';
+  select.style.top = '10px';
+  select.style.right = '10px';
+  select.style.zIndex = 1;
+
+  const scenarios = {
+    'Scenario 1: All Buildings': 'filtered_buildings_scenario1.geojson',
+    'Scenario 2: Slope Categorized': 'filtered_buildings_scenario2.geojson',
+    'Scenario 3: Excluding Industrial': 'filtered_buildings_scenario3.geojson'
+  };
+
+  for (let label in scenarios) {
+    const option = document.createElement('option');
+    option.value = scenarios[label];
+    option.text = label;
+    select.appendChild(option);
+  }
+
+  select.onchange = () => {
+    loadScenario(select.value);
+  };
+
+  document.body.appendChild(select);
 });
