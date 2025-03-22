@@ -7,10 +7,10 @@ const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
 });
 
 // Define the Mapbox dark theme base layer
-const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={pk.ey...}', {
-    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox/dark-v10',
-    accessToken: 'pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw'
+const mapboxLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw', {
+  tileSize: 512,
+  zoomOffset: -1,
+  attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>'
 });
 
 // Add the OSM layer to the map by default
