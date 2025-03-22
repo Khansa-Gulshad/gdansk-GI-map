@@ -162,8 +162,6 @@ document.getElementById('scenario3-btn').addEventListener('click', function () {
     scenario3Layer.addTo(map);
 });
 
-// Scenario switcher
-L.control.layers(null, overlayMaps).addTo(map);
 
 // Info Panel Close Button
 document.getElementById('close-btn').addEventListener('click', function () {
