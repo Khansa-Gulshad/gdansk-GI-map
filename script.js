@@ -4,8 +4,7 @@ var map = L.map('map').setView([54.347629, 18.646638], 10);
 // 2) Add a Mapbox Dark base layer
 //    Replace "YOUR_MAPBOX_ACCESS_TOKEN" with your actual token
 var mapboxDark = L.tileLayer(
-  'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}@2x?access_token=
-pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
+  'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
   {
     attribution: 'Map data &copy; OpenStreetMap contributors, Imagery © Mapbox',
     tileSize: 512,
