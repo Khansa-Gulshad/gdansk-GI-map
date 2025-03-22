@@ -19,7 +19,7 @@ function getColor(percentage) {
 }
 
 // Load districts GeoJSON data
-fetch('https://raw.githubusercontent.com/your-Khansa-Gulshad/your-repo/main/data/combined_gdansk_districts_roof.geojson')
+fetch('https://raw.githubusercontent.com/Khansa-Gulshad/gdansk-green-roofs/main/combined_gdansk_districts_roof.geojson')
     .then(response => response.json())
     .then(data => {
         // Add districts layer to the map
