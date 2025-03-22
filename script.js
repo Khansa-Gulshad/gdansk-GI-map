@@ -9,9 +9,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Define the URLs for the GeoJSON files
-var scenario1Url = 'https://raw.githubusercontent.com/Khansa-Gulshad/Green-roofs-GPS/main/filtered_buildings_scenario1.geojson';
-var scenario2Url = 'https://raw.githubusercontent.com/Khansa-Gulshad/Green-roofs-GPS/main/filtered_buildings_scenario2.geojson';
-var scenario3Url = 'https://raw.githubusercontent.com/Khansa-Gulshad/Green-roofs-GPS/main/filtered_buildings_scenario3.geojson';
+var scenario1Url = 'filtered_buildings_scenario1.geojson';
+var scenario2Url = 'filtered_buildings_scenario2.geojson';
+var scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Define a function to get color based on GPS_roof value
 function getColor(d) {
