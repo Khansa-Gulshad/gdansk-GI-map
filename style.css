@@ -16,7 +16,9 @@ html, body {
   font-size: 14px;
   border-radius: 5px;
   line-height: 18px;
+  max-width: 250px; /* Limit max width to make it look nicer */
 }
+
 .info.legend i {
   width: 18px;
   height: 18px;
@@ -24,6 +26,7 @@ html, body {
   margin-right: 8px;
   opacity: 0.9;
 }
+
 #info-panel {
   position: absolute;
   top: 50%; /* Vertically center */
@@ -82,17 +85,19 @@ html, body {
   padding: 10px;
   border-radius: 5px;
   font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column; /* Align buttons vertically */
 }
 
 .scenario-btn {
   background-color: #444;
   color: white;
   border: none;
-  padding: 10px;
-  margin: 5px;
+  padding: 15px; /* Increase padding for bigger buttons */
+  margin: 10px 0; /* Add margin between buttons */
   width: 100%;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px; /* Make text more readable */
   text-align: center;
   border-radius: 5px;
 }
