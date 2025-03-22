@@ -26,16 +26,15 @@ function getColor(d) {
 // Define a function to style each feature
 function style(feature) {
     const score = feature.properties.GPS_roof;
-    console.log('GPS_roof:', score); // DEBUGGING VALUE
+    console.log('GPS_roof:', score); // Add this line!
 
     return {
         fillColor: getColor(score),
         weight: 0,
         color: 'transparent',
-        fillOpacity: 0.9 // Make it more visible
+        fillOpacity: 0.9
     };
 }
-
 // Define a function to bind popups to each feature
 function onEachFeature(feature, layer) {
     if (feature.properties) {
