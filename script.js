@@ -1,130 +1,64 @@
 // Initialize the map
-const map = L.map('map').setView([54.352, 18.646], 12); // Centering on Gdańsk
+var map = L.map('map').setView([54.3520, 18.6466], 12); // Center on Gdańsk
 
-// Add base tile layer (Mapbox)
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-    id: 'mapbox/streets-v11',
-    accessToken: 'pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw'
+// Add Mapbox black theme as the base layer
+L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw', {
+    attribution: '© <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    tileSize: 512,
+    zoomOffset: -1
 }).addTo(map);
 
-// Placeholder variables for layers
-let districtLayer, gridLayer, geojsonLayer;
-
-// Define your GeoJSON data for districts, grids, buildings (adjust file paths)
-const gdanskBoundaryGeoJSON = 'path_to_your_gdansk_boundary.geojson'; // Replace with actual file
-const districtsGeoJSON = 'path_to_your_districts.geojson'; // Replace with actual file
-const gridGeoJSON = 'path_to_your_grid.geojson'; // Replace with actual file
-
-// Style function to apply color gradients based on green roof score
-function getColor(score) {
-    return score > 0.75 ? 'green' :
-           score > 0.5  ? 'yellow' :
-           score > 0.25 ? 'orange' :
-                          'red';
+// Function to get color based on suitable_area_percentage_1
+function getColor(percentage) {
+    return percentage > 15 ? '#00441b' :
+           percentage > 10 ? '#238b45' :
+           percentage > 5 ? '#41ab5d' :
+           percentage > 0 ? '#74c476' :
+                             '#d9f0a3';
 }
 
-// District Layer Styling
-function styleDistricts(feature) {
-    const score = feature.properties.green_roof_score; // Replace with actual property name
-    return {
-        fillColor: getColor(score),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        fillOpacity: 0.7
-    };
-}
-
-// Grid Layer Styling
-function styleGrids(feature) {
-    const score = feature.properties.green_roof_score; // Replace with actual property name
-    return {
-        fillColor: getColor(score),
-        weight: 1,
-        opacity: 0.7,
-        color: 'black',
-        fillOpacity: 0.6
-    };
-}
-
-// Building Layer Styling (Scenario-based)
-function styleBuildings(feature, scenario) {
-    let score = 0;
-    if (scenario === 1) {
-        score = feature.properties.slope_height_area_ratio; // Example for scenario 1
-    } else if (scenario === 2) {
-        score = feature.properties.slope_category_score; // Example for scenario 2
-    } else if (scenario === 3) {
-        score = feature.properties.slope_height_area_no_industrial; // Example for scenario 3
-    }
-
-    return {
-        fillColor: getColor(score),
-        weight: 1,
-        opacity: 0.8,
-        color: 'black',
-        fillOpacity: 0.6
-    };
-}
-
-// Add District Layer
-districtLayer = L.geoJSON(districtsGeoJSON, { style: styleDistricts }).addTo(map);
-
-// Add Grid Layer
-gridLayer = L.geoJSON(gridGeoJSON, { style: styleGrids }).addTo(map);
-
-// Fetch and Filter GeoJSON based on selected scenario and control parameters
-function fetchAndUpdateMap(filePath) {
-    fetch(filePath)
-        .then(res => res.json())
-        .then(data => {
-            if (geojsonLayer) {
-                map.removeLayer(geojsonLayer);
+// Load districts GeoJSON data
+fetch('https://raw.githubusercontent.com/your-username/your-repo/main/data/combined_gdansk_districts_roof.geojson')
+    .then(response => response.json())
+    .then(data => {
+        // Add districts layer to the map
+        L.geoJSON(data, {
+            style: function(feature) {
+                return {
+                    fillColor: getColor(feature.properties.suitable_area_percentage_1),
+                    weight: 1,
+                    opacity: 1,
+                    color: 'white',
+                    fillOpacity: 0.7
+                };
+            },
+            onEachFeature: function(feature, layer) {
+                // Add popup with district name and suitable area percentage
+                layer.bindPopup(`
+                    <b>District:</b> ${feature.properties.District}<br>
+                    <b>Suitable Area (%):</b> ${feature.properties.suitable_area_percentage_1}%
+                `);
             }
-
-            let maxSlope = parseFloat(document.getElementById('slopeRange').value);
-            let maxHeight = parseFloat(document.getElementById('heightRange').value);
-            let maxArea = parseFloat(document.getElementById('areaRange').value);
-            let maxShape = parseFloat(document.getElementById('shapeRange').value);
-
-            geojsonLayer = L.geoJSON(data, {
-                filter: feature => {
-                    return feature.properties.Slope <= maxSlope &&
-                        feature.properties.Height <= maxHeight &&
-                        feature.properties.Area1 <= maxArea && 
-                        feature.properties.shape_ratio <= maxShape;
-                },
-                style: feature => styleBuildings(feature, 1), // Default to scenario 1
-                onEachFeature: (feature, layer) => {
-                    layer.bindPopup(`
-                        <strong>Greening Potential Score:</strong> ${feature.properties.GPS_roof}<br> 
-                        <strong>Height:</strong> ${feature.properties.Height} m<br> 
-                        <strong>Slope:</strong> ${feature.properties.Slope}°<br> 
-                        <strong>Area:</strong> ${feature.properties.Area1} m²<br> 
-                        <strong>Shape Ratio:</strong> ${feature.properties.shape_ratio}
-                    `);
-                }
-            }).addTo(map);
-        })
-        .catch(error => console.error("Error fetching data: ", error));
-}
-
-// Initialize with the default scenario
-fetchAndUpdateMap('filtered_buildings_scenario1.geojson');
-
-// Scenario Change (dropdown)
-document.getElementById('scenarioSelect').addEventListener('change', function() {
-    const selectedScenario = this.value;
-    fetchAndUpdateMap(selectedScenario);
-});
-
-// Controls for Slope, Height, Area, Shape Ratio
-['slopeRange', 'heightRange', 'areaRange', 'shapeRange'].forEach(control => {
-    document.getElementById(control).addEventListener('input', function() {
-        document.getElementById(`${control}Val`).textContent = `${this.value}`;
-        const selectedScenario = document.getElementById('scenarioSelect').value;
-        fetchAndUpdateMap(selectedScenario);
+        }).addTo(map);
     });
-});
+
+// Add a legend
+var legend = L.control({ position: 'bottomright' });
+
+legend.onAdd = function(map) {
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = `
+        <h4>Suitable Area (%)</h4>
+        <div><span style="background:#00441b"></span> > 15%</div>
+        <div><span style="background:#238b45"></span> 10-15%</div>
+        <div><span style="background:#41ab5d"></span> 5-10%</div>
+        <div><span style="background:#74c476"></span> 2-5%</div>
+        <div><span style="background:#d9f0a3"></span> < 2%</div>
+    `;
+    return div;
+};
+
+legend.addTo(map);
 
 
