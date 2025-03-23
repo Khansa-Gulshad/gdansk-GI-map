@@ -79,44 +79,24 @@ html, body {
   background-color: #00b3cc;
 }
 
-/* Style for the custom scenario buttons */
+/* Scenario buttons styling */
 .leaflet-control-custom {
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 10px;
+  background: white;
+  padding: 5px;
   border-radius: 5px;
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column; /* Align buttons vertically */
 }
 
 .scenario-btn {
-  background-color: #444;
+  display: block;
+  margin: 5px 0;
+  padding: 5px 10px;
+  background: #007bff;
   color: white;
   border: none;
-  padding: 15px; /* Increase padding for bigger buttons */
-  margin: 10px 0; /* Add margin between buttons */
-  width: 100%;
   cursor: pointer;
-  font-size: 18px; /* Make text more readable */
-  text-align: center;
-  border-radius: 5px;
+  text-align: left;
 }
 
 .scenario-btn:hover {
-  background-color: #00eaff;
-}
-
-.scenario-btn:focus {
-  outline: none;
-}
-#slope-category-panel {
-  position: absolute;
-  top: 80px;
-  left: 10px;
-  background: rgba(0, 0, 0, 0.85);
-  color: white;
-  padding: 10px;
-  z-index: 999;
-  border-radius: 5px;
-  font-size: 14px;
+  background: #0056b3;
 }
