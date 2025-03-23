@@ -7,35 +7,36 @@ const mapboxLayer = L.tileLayer(
   {
     tileSize: 512,
     zoomOffset: -1,
-    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>' // Map attribution
+    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>'
   }
 );
-mapboxLayer.addTo(map); // Add the map layer to the map
+mapboxLayer.addTo(map);
 
-// GeoJSON files for scenarios 1, 2, and 3
+// GeoJSON URLs
 const scenario1Url = 'filtered_buildings_scenario1.geojson';
 const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
-// Create a base chroma color scale, it will dynamically update based on the score range
+// Create base color scale
 let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
 
+// Score-based color
 function getColor(score) {
-  return colorScale(score).hex(); // Convert score to color
+  return colorScale(score).hex();
 }
 
-// Style function for each building (based on GPS_roof score)
+// Building style
 function style(feature) {
-  const score = parseFloat(feature.properties.GPS_roof); // Extract score from the feature
+  const score = parseFloat(feature.properties.GPS_roof);
   return {
-    fillColor: getColor(score), // Apply color to the building based on its score
+    fillColor: getColor(score),
     weight: 0,
     color: 'transparent',
     fillOpacity: 0.9
   };
 }
 
-// Popup for each feature
+// Popups
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     layer.bindPopup(
@@ -51,39 +52,38 @@ function onEachFeature(feature, layer) {
   }
 }
 
-// Load GeoJSON data and fit bounds
+// Dynamic GeoJSON loader with color scale + legend update
 function loadGeoJSON(url, layerGroup) {
   fetch(url)
-    .then(response => response.json()) // Fetch the GeoJSON data
+    .then(response => response.json())
     .then(data => {
-      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof)); // Extract all scores
-      const minScore = Math.min(...allScores); // Find the minimum score
-      const maxScore = Math.max(...allScores); // Find the maximum score
+      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
+      const minScore = Math.min(...allScores);
+      const maxScore = Math.max(...allScores);
 
-      // Dynamically update the color scale range based on the data
-      colorScale = colorScale.domain([minScore, maxScore]);
+      colorScale = colorScale.domain([minScore, maxScore]); // Update range
+      currentMin = minScore;
+      currentMax = maxScore;
 
-      // Update the legend to reflect the new data range
-      legend.remove();   // Remove the previous legend
-      legend.addTo(map); // Add the updated one
+      legend.remove();
+      legend.addTo(map);
 
-      // Create and add the GeoJSON layer to the specified layer group
       const layer = L.geoJSON(data, {
         style: style,
         onEachFeature: onEachFeature
       }).addTo(layerGroup);
 
-      map.fitBounds(layer.getBounds()); // Fit map to the bounds of the new layer
+      map.fitBounds(layer.getBounds());
     })
-    .catch(err => console.error('Error loading GeoJSON data:', err)); // Log errors if fetching fails
+    .catch(err => console.error('Error loading GeoJSON:', err));
 }
 
-// Layer groups for each scenario
+// Layers
 const scenario1Layer = L.layerGroup();
 const scenario2Layer = L.layerGroup();
 const scenario3Layer = L.layerGroup();
 
-// Load data for all scenarios
+// Load all scenarios
 loadGeoJSON(scenario1Url, scenario1Layer);
 loadGeoJSON(scenario2Url, scenario2Layer);
 loadGeoJSON(scenario3Url, scenario3Layer);
@@ -91,18 +91,8 @@ loadGeoJSON(scenario3Url, scenario3Layer);
 // Show Scenario 1 by default
 scenario1Layer.addTo(map);
 
-// Overlay map control for switching between scenarios
-const overlayMaps = {
-  'Scenario 1: All Buildings': scenario1Layer,
-  'Scenario 2: Slope Categorized': scenario2Layer,
-  'Scenario 3: Excluding Industrial': scenario3Layer
-};
-
-// Create the legend for greening score
-// legend
+// Legend setup
 let legend = L.control({ position: 'bottomleft' });
-
-// Keep reference to latest data range
 let currentMin = 0;
 let currentMax = 1;
 
@@ -112,61 +102,52 @@ legend.onAdd = function () {
   const stepSize = (currentMax - currentMin) / steps;
 
   div.innerHTML += '<b>Greening Score</b><br>';
-
   for (let i = 0; i < steps; i++) {
-    const from = (currentMin + stepSize * i).toFixed(2);
-    const to = (currentMin + stepSize * (i + 1)).toFixed(2);
-    const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
-
+    const from = (currentMin + i * stepSize).toFixed(2);
+    const to = (currentMin + (i + 1) * stepSize).toFixed(2);
+    const color = getColor((+from + +to) / 2);
     div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
   }
 
   return div;
 };
-
 legend.addTo(map);
 
-// Custom scenario control buttons with text (no icons)
+// Custom scenario buttons
 const scenarioControl = L.Control.extend({
-    options: {
-        position: 'topright'
-    },
-    onAdd: function () {
-        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-        container.innerHTML = `
-            <button class="leaflet-bar-btn" id="scenario1-btn">Scenario 1</button>
-            <button class="leaflet-bar-btn" id="scenario2-btn">Scenario 2</button>
-            <button class="leaflet-bar-btn" id="scenario3-btn">Scenario 3</button>
-        `;
-        return container;
-    }
+  options: { position: 'topright' },
+  onAdd: function () {
+    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+    container.innerHTML = `
+      <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
+      <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
+      <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
+    `;
+    return container;
+  }
+});
+map.addControl(new scenarioControl());
+
+// Button event listeners
+document.getElementById('scenario1-btn').addEventListener('click', () => {
+  map.removeLayer(scenario2Layer);
+  map.removeLayer(scenario3Layer);
+  scenario1Layer.addTo(map);
 });
 
-map.addControl(new scenarioControl()); // Add the scenario buttons to the map
-
-// Switch to Scenario 1 when button clicked
-document.getElementById('scenario1-btn').addEventListener('click', function () {
-    map.removeLayer(scenario2Layer);
-    map.removeLayer(scenario3Layer);
-    scenario1Layer.addTo(map);
+document.getElementById('scenario2-btn').addEventListener('click', () => {
+  map.removeLayer(scenario1Layer);
+  map.removeLayer(scenario3Layer);
+  scenario2Layer.addTo(map);
 });
 
-// Switch to Scenario 2 when button clicked
-document.getElementById('scenario2-btn').addEventListener('click', function () {
-    map.removeLayer(scenario1Layer);
-    map.removeLayer(scenario3Layer);
-    scenario2Layer.addTo(map);
+document.getElementById('scenario3-btn').addEventListener('click', () => {
+  map.removeLayer(scenario1Layer);
+  map.removeLayer(scenario2Layer);
+  scenario3Layer.addTo(map);
 });
 
-// Switch to Scenario 3 when button clicked
-document.getElementById('scenario3-btn').addEventListener('click', function () {
-    map.removeLayer(scenario1Layer);
-    map.removeLayer(scenario2Layer);
-    scenario3Layer.addTo(map);
-});
-
-// Info Panel Close Button functionality
+// Info panel close button
 document.getElementById('close-btn').addEventListener('click', function () {
-  const panel = document.getElementById('info-panel');
-  panel.style.display = 'none'; // Hide the info panel when close button is clicked
+  document.getElementById('info-panel').style.display = 'none';
 });
