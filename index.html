@@ -31,27 +31,29 @@
   </div>
 
   <!-- EXISTING MAP DIV -->
-<div id="map"></div>
+  <div id="map"></div>
 
-<!-- ✅ Add slope category filter here -->
-<div id="slope-category-panel" style="display:none;">
-  <strong>Filter by Slope Category</strong><br>
-  <label><input type="checkbox" value="0–5°" checked> 0–5°</label><br>
-  <label><input type="checkbox" value="5–10°" checked> 5–10°</label><br>
-  <label><input type="checkbox" value="10–15°" checked> 10–15°</label><br>
-  <label><input type="checkbox" value="15–20°" checked> 15–20°</label><br>
-</div>
+  <!-- Slope Category Filter Panel -->
+  <div id="slope-category-panel" class="panel">
+    <h3>Slope Category Filter</h3>
+    <label><input type="checkbox" value="flat" checked> Flat</label><br>
+    <label><input type="checkbox" value="moderate" checked> Moderate</label><br>
+    <label><input type="checkbox" value="steep" checked> Steep</label><br>
+  </div>
 
-<!-- Leaflet & scripts -->
-<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
-<script src="script.js"></script>
+  <!-- Info Panel -->
+  <div id="info-panel" class="panel">
+    <button id="close-btn">Close</button>
+    <div id="info-content"></div>
+  </div>
 
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-  <!-- Chroma.js for gradient coloring -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
-  <!-- Your map logic -->
-  <script src="script.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <!-- Chroma.js for color scales -->
+  <script src="https://unpkg.com/chroma-js@2.1.0/chroma.min.js"></script>
+  <!-- Custom JS -->
+  <script src="scripts.js"></script>
 </body>
 </html>
+
 
