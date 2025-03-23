@@ -109,3 +109,14 @@ html, body {
 .scenario-btn:focus {
   outline: none;
 }
+#slope-category-panel {
+  position: absolute;
+  top: 80px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 10px;
+  z-index: 999;
+  border-radius: 5px;
+  font-size: 14px;
+}
