@@ -84,7 +84,7 @@ const scenario3Layer = L.layerGroup();
 
 // Load all scenarios
 loadGeoJSON(scenario1Url, scenario1Layer);
-loadGeoJSON(scenario2Url, scenario2Layer);
+//loadGeoJSON(scenario2Url, scenario2Layer);
 loadGeoJSON(scenario3Url, scenario3Layer);
 
 // Show Scenario 1 by default
@@ -112,6 +112,62 @@ legend.onAdd = function () {
 };
 legend.addTo(map);
 
+// 🔧 NEW CODE START
+
+// Show/hide slope filter panel based on scenario
+function toggleSlopeFilterPanel(show) {
+  const panel = document.getElementById('slope-category-panel');
+  panel.style.display = show ? 'block' : 'none';
+}
+
+// Filter features by slope_category (Scenario 2 only)
+function filterBySlopeCategory(layerGroup) {
+  const checkedValues = Array.from(document.querySelectorAll('#slope-category-panel input[type="checkbox"]:checked'))
+    .map(cb => cb.value);
+
+  // Clear the layer
+  layerGroup.clearLayers();
+
+  // Re-fetch data for filtering
+  fetch(scenario2Url)
+    .then(response => response.json())
+    .then(data => {
+      const filteredFeatures = data.features.filter(feature =>
+        checkedValues.includes(feature.properties.slope_category)
+      );
+
+      const allScores = filteredFeatures.map(f => parseFloat(f.properties.GPS_roof));
+      const minScore = Math.min(...allScores);
+      const maxScore = Math.max(...allScores);
+
+      colorScale = colorScale.domain([minScore, maxScore]);
+      currentMin = minScore;
+      currentMax = maxScore;
+      legend.remove();
+      legend.addTo(map);
+
+      const layer = L.geoJSON({ type: "FeatureCollection", features: filteredFeatures }, {
+        style: style,
+        onEachFeature: onEachFeature
+      }).addTo(layerGroup);
+
+      map.fitBounds(layer.getBounds());
+    });
+}
+
+// Watch slope filter checkboxes
+document.querySelectorAll('#slope-category-panel input[type="checkbox"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    // Only filter if Scenario 2 is currently active
+    if (map.hasLayer(scenario2Layer)) {
+      filterBySlopeCategory(scenario2Layer);
+    }
+  });
+});
+
+
+// 🔧 NEW CODE END
+
 // Custom scenario buttons
 const scenarioControl = L.Control.extend({
   options: { position: 'topleft' },
@@ -128,23 +184,31 @@ const scenarioControl = L.Control.extend({
 map.addControl(new scenarioControl());
 
 // Button event listeners
+// Scenario 1 button
 document.getElementById('scenario1-btn').addEventListener('click', () => {
   map.removeLayer(scenario2Layer);
   map.removeLayer(scenario3Layer);
   scenario1Layer.addTo(map);
+  toggleSlopeFilterPanel(false); // ❌ Hide slope filter
 });
 
+// Scenario 2 button
 document.getElementById('scenario2-btn').addEventListener('click', () => {
   map.removeLayer(scenario1Layer);
   map.removeLayer(scenario3Layer);
   scenario2Layer.addTo(map);
+  toggleSlopeFilterPanel(true); // ✅ Show slope filter
+  filterBySlopeCategory(scenario2Layer); // 🔁 Apply current filters
 });
 
+// Scenario 3 button
 document.getElementById('scenario3-btn').addEventListener('click', () => {
   map.removeLayer(scenario1Layer);
   map.removeLayer(scenario2Layer);
   scenario3Layer.addTo(map);
+  toggleSlopeFilterPanel(false); // Hide slope filter
 });
+
 
 // Info panel close button
 document.getElementById('close-btn').addEventListener('click', function () {
