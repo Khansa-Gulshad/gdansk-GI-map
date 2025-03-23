@@ -40,12 +40,12 @@ function style(feature) {
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     layer.bindPopup(
-      `<b>Building ID:</b> ${feature.properties.id}<br>` +
-      `<b>Greening Potential Score:</b> ${feature.properties.GPS_roof}<br>` +
-      `<b>Slope:</b> ${feature.properties.Slope}<br>` +
-      `<b>Height:</b> ${feature.properties.Height}<br>` +
-      `<b>Area:</b> ${feature.properties.Area1}<br>` +
-      `<b>Shape Ratio:</b> ${feature.properties.shape_ratio}<br>` +
+      `<b>Building ID:</b> ${feature.properties.id ?? 'N/A'}<br>` +
+      `<b>Greening Potential Score:</b> ${(+feature.properties.GPS_roof).toFixed(2)}<br>` +
+      `<b>Slope:</b> ${(+feature.properties.Slope).toFixed(2)}<br>` +
+      `<b>Height:</b> ${(+feature.properties.Height).toFixed(2)}<br>` +
+      `<b>Area:</b> ${(+feature.properties.Area1).toFixed(2)}<br>` +
+      `<b>Shape Ratio:</b> ${(+feature.properties.shape_ratio).toFixed(2)}<br>` +
       (feature.properties.slope_category ? `<b>Slope Category:</b> ${feature.properties.slope_category}<br>` : '') +
       (feature.properties.slope_score ? `<b>Slope Score:</b> ${feature.properties.slope_score}<br>` : '')
     );
