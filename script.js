@@ -114,7 +114,7 @@ legend.addTo(map);
 
 // Custom scenario buttons
 const scenarioControl = L.Control.extend({
-  options: { position: 'topright' },
+  options: { position: 'topleft' },
   onAdd: function () {
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
     container.innerHTML = `
