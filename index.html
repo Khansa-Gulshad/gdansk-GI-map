@@ -31,10 +31,21 @@
   </div>
 
   <!-- EXISTING MAP DIV -->
-  <div id="map"></div>
+<div id="map"></div>
 
+<!-- ✅ Add slope category filter here -->
+<div id="slope-category-panel" style="display:none;">
+  <strong>Filter by Slope Category</strong><br>
+  <label><input type="checkbox" value="0–5°" checked> 0–5°</label><br>
+  <label><input type="checkbox" value="5–10°" checked> 5–10°</label><br>
+  <label><input type="checkbox" value="10–15°" checked> 10–15°</label><br>
+  <label><input type="checkbox" value="15–20°" checked> 15–20°</label><br>
+</div>
 
-  <div id="map"></div>
+<!-- Leaflet & scripts -->
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
+<script src="script.js"></script>
 
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <!-- Chroma.js for gradient coloring -->
