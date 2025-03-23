@@ -1,6 +1,18 @@
- <!-- Font Awesome CDN for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gdańsk Green Roof Map</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  
+  <!-- Font Awesome (optional, only if using icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+  <!-- Your custom styles -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- INFO PANEL HERE -->
@@ -12,7 +24,7 @@
     </p>
     <ul>
       <li><b>Scenario 1:</b> Buildings are filtered based on Height, Slope, Area, Surface Ratio with their respective thresholds.</li>
-      <li><b>Scenario 2:</b> In scenario 2, apart from Scenario 1 factors, slope is further categorized into (0–5°, 5-10°, 10-15°,15-20°) with lower slope = better.</li>
+      <li><b>Scenario 2:</b> In scenario 2, apart from Scenario 1 factors, slope is further categorized into (0–5°, 5–10°, 10–15°, 15–20°) with lower slope = better.</li>
       <li><b>Scenario 3:</b> Same as Scenario 1 but excludes industrial buildings.</li>
     </ul>
     <p class="disclaimer">
@@ -22,15 +34,14 @@
     <button id="close-btn">Explore the Map</button>
   </div>
 
-  <!-- EXISTING MAP DIV -->
+  <!-- MAP -->
   <div id="map"></div>
 
-
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   <!-- Chroma.js for gradient coloring -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
-  <!-- Your map logic -->
+  <!-- Your JavaScript file -->
   <script src="script.js"></script>
 </body>
 </html>
-
