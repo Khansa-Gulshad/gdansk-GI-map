@@ -40,13 +40,13 @@ function style(feature) {
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     layer.bindPopup(
-      <b>Greening Potential Score:</b> ${(+feature.properties.GPS_roof).toFixed(2)}<br> +
-      <b>Slope:</b> ${(+feature.properties.Slope).toFixed(2)}°<br> +
-      <b>Height:</b> ${(+feature.properties.Height).toFixed(2)} m<br> +
-      <b>Area:</b> ${(+feature.properties.Area1).toFixed(2)} m²<br> +
-      <b>Shape Ratio:</b> ${(+feature.properties.shape_ratio).toFixed(2)}<br> +
-      (feature.properties.slope_category ? <b>Slope Category:</b> ${feature.properties.slope_category}<br> : '') +
-      (feature.properties.slope_score ? <b>Slope Score:</b> ${feature.properties.slope_score}<br> : '')
+      `<b>Greening Potential Score:</b> ${(+feature.properties.GPS_roof).toFixed(2)}<br>` +
+      `<b>Slope:</b> ${(+feature.properties.Slope).toFixed(2)}°<br>` +
+      `<b>Height:</b> ${(+feature.properties.Height).toFixed(2)} m<br>` +
+      `<b>Area:</b> ${(+feature.properties.Area1).toFixed(2)} m²<br>` +
+      `<b>Shape Ratio:</b> ${(+feature.properties.shape_ratio).toFixed(2)}<br>` +
+      (feature.properties.slope_category ? `<b>Slope Category:</b> ${feature.properties.slope_category}<br>` : '') +
+      (feature.properties.slope_score ? `<b>Slope Score:</b> ${feature.properties.slope_score}<br>` : '')
     );
   }
 }
@@ -105,7 +105,7 @@ legend.onAdd = function () {
     const from = (currentMin + i * stepSize).toFixed(2);
     const to = (currentMin + (i + 1) * stepSize).toFixed(2);
     const color = getColor((+from + +to) / 2);
-    div.innerHTML += <i style="background:${color}"></i> ${from} – ${to}<br>;
+    div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
   }
 
   return div;
@@ -114,14 +114,14 @@ legend.addTo(map);
 
 // Custom scenario buttons
 const scenarioControl = L.Control.extend({
-  options: { position: 'topleft' },
+  options: { position: 'topright' },
   onAdd: function () {
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-    container.innerHTML = 
+    container.innerHTML = `
       <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
       <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
       <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
-    ;
+    `;
     return container;
   }
 });
