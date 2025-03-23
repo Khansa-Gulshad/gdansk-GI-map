@@ -40,7 +40,6 @@ function style(feature) {
 function onEachFeature(feature, layer) {
   if (feature.properties) {
     layer.bindPopup(
-      `<b>Building ID:</b> ${feature.properties.id ?? 'N/A'}<br>` +
       `<b>Greening Potential Score:</b> ${(+feature.properties.GPS_roof).toFixed(2)}<br>` +
       `<b>Slope:</b> ${(+feature.properties.Slope).toFixed(2)}<br>` +
       `<b>Height:</b> ${(+feature.properties.Height).toFixed(2)}<br>` +
