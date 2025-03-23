@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Green Roofs - Gdańsk</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-  <link rel="stylesheet" href="style.css" />
-  <!-- Font Awesome CDN for icons -->
+ <!-- Font Awesome CDN for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 </head>
@@ -33,19 +25,14 @@
   <!-- EXISTING MAP DIV -->
   <div id="map"></div>
 
-  <!-- Info Panel -->
-  <div id="info-panel" class="panel">
-    <button id="close-btn">Close</button>
-    <div id="info-content"></div>
-  </div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <!-- Chroma.js for color scales -->
-  <script src="https://unpkg.com/chroma-js@2.1.0/chroma.min.js"></script>
-  <!-- Custom JS -->
-  <script src="scripts.js"></script>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <!-- Chroma.js for gradient coloring -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
+  <!-- Your map logic -->
+  <script src="script.js"></script>
 </body>
 </html>
-
 
