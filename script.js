@@ -48,16 +48,12 @@ function styleDistricts(feature) {
 function onEachDistrict(feature, layer) {
   const districtName = feature.properties.District;
   
-  // If value is null or undefined, set to 0. Otherwise, format to 2 decimal places.
-  const area1 = (feature.properties.suitable_area_km2_1 != null) ? feature.properties.suitable_area_km2_1.toFixed(2) : '0.00';
-  const area2 = (feature.properties.suitable_area_km2_2 != null) ? feature.properties.suitable_area_km2_2.toFixed(2) : '0.00';
-  const area3 = (feature.properties.suitable_area_km2_3 != null) ? feature.properties.suitable_area_km2_3.toFixed(2) : '0.00';
+  // Display area based on the current scenario
+  const area = feature.properties[`suitable_area_km2_${currentScenario}`] !== undefined ? feature.properties[`suitable_area_km2_${currentScenario}`].toFixed(2) : '0.00';
 
   layer.bindPopup(
     `<b>District:</b> ${districtName}<br>` +
-    `<b>Scenario 1 - Green Roof Area:</b> ${area1} km²<br>` +
-    `<b>Scenario 2 - Green Roof Area:</b> ${area2} km²<br>` +
-    `<b>Scenario 3 - Green Roof Area:</b> ${area3} km²`
+    `<b>Green Roof Area (Scenario ${currentScenario}):</b> ${area} km²`
   );
 }
 
