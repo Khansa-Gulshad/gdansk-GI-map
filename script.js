@@ -49,7 +49,7 @@ function onEachDistrict(feature, layer) {
   const districtName = feature.properties.District;
   
   // Display area based on the current scenario
-  const area = feature.properties[`suitable_area_km2_${currentScenario}`] !== undefined ? feature.properties[`suitable_area_km2_${currentScenario}`].toFixed(2) : '0.00';
+  const area = feature.properties[`suitable_area_km2_${currentScenario}`] !== null ? feature.properties[`suitable_area_km2_${currentScenario}`].toFixed(2) : '0.00';
 
   layer.bindPopup(
     `<b>District:</b> ${districtName}<br>` +
@@ -162,7 +162,7 @@ districtLegend.onAdd = function () {
   const steps = 5;
   const stepSize = (currentMax - currentMin) / steps;
 
-  div.innerHTML += '<b>Greening Score (Districts)</b><br>';
+  div.innerHTML += '<b>Potential Green Roof Area (Districts)</b><br>';
   for (let i = 0; i < steps; i++) {
     const from = (currentMin + i * stepSize).toFixed(2);
     const to = (currentMin + (i + 1) * stepSize).toFixed(2);
