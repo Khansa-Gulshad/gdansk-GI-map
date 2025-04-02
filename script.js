@@ -101,41 +101,6 @@ function onEachFeature(feature, layer) {
 }
 
 
-// Dynamic GeoJSON loader with color scale + legend update
-function loadGeoJSON(url, layerGroup) {
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
-      currentMin = Math.min(...allScores);
-      currentMax = Math.max(...allScores);
-
-      colorScale = colorScale.domain([currentMin, currentMax]); // Update color scale domain
-
-      // Create and update the appropriate legend (district or building)
-      let currentLegend;
-      if (url === districtsUrl) {
-        currentLegend = districtLegend;
-      } else {
-        currentLegend = buildingLegend;
-      }
-
-      // Remove the old legend and add the new one
-      if (currentLegend) {
-        map.removeControl(currentLegend); // Remove the existing legend
-      }
-      currentLegend.addTo(map); // Add the correct legend to the map
-
-      const layer = L.geoJSON(data, {
-        style: style,
-        onEachFeature: onEachFeature
-      }).addTo(layerGroup);
-
-      map.fitBounds(layer.getBounds());
-    })
-    .catch(err => console.error('Error loading GeoJSON:', err));
-}
-
 // Layers
 const scenario1Layer = L.layerGroup();
 const scenario2Layer = L.layerGroup();
@@ -192,6 +157,39 @@ buildingLegend.onAdd = function () {
 // Start with the district legend visible
 let currentLegend = districtLegend;
 currentLegend.addTo(map);
+
+// Dynamic GeoJSON loader with color scale + legend update
+function loadGeoJSON(url, layerGroup) {
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
+      currentMin = Math.min(...allScores); // Update min score dynamically
+      currentMax = Math.max(...allScores); // Update max score dynamically
+
+      colorScale = colorScale.domain([currentMin, currentMax]); // Update color scale domain
+
+      // Update the correct legend (district or building)
+      let currentLegend;
+      if (url === districtsUrl) {
+        currentLegend = districtLegend;
+      } else {
+        currentLegend = buildingLegend;
+      }
+
+      // Remove the old legend and add the new one
+      map.removeControl(currentLegend);
+      currentLegend.addTo(map);
+
+      const layer = L.geoJSON(data, {
+        style: style,
+        onEachFeature: onEachFeature
+      }).addTo(layerGroup);
+
+      map.fitBounds(layer.getBounds());
+    })
+    .catch(err => console.error('Error loading GeoJSON:', err));
+}
 
 // Custom scenario buttons
 const scenarioControl = L.Control.extend({
