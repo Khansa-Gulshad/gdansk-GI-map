@@ -12,6 +12,13 @@ const mapboxLayer = L.tileLayer(
 );
 mapboxLayer.addTo(map);
 
+// Add scale control with custom options
+L.control.scale({
+  imperial: false,  // Disable feet
+  metric: true,     // Use metric system (kilometers, meters)
+  position: 'bottomright' // Change position to bottom-right
+}).addTo(map);
+
 // GeoJSON URLs
 const scenario1Url = 'filtered_buildings_scenario1.geojson';
 const scenario2Url = 'filtered_buildings_scenario2.geojson';
