@@ -20,17 +20,61 @@ L.control.scale({
 }).addTo(map);
 
 // GeoJSON URLs
+const districtsUrl = 'combined_gdansk_districts_roof.geojson'; // Replace with your districts GeoJSON URL
 const scenario1Url = 'filtered_buildings_scenario1.geojson';
 const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Create base color scale
 let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
+let currentScenario = 1; // Default scenario (Scenario 1)
 
 // Score-based color
 function getColor(score) {
   return colorScale(score).hex();
 }
+// Styling function for districts layer
+function styleDistricts(feature) {
+  const score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]); // Use the selected scenario's area
+  return {
+    fillColor: getColor(score),
+    weight: 1,
+    color: 'transparent',
+    fillOpacity: 0.7
+  };
+}
+
+// Popups for districts showing the area for each scenario
+function onEachDistrict(feature, layer) {
+  const districtName = feature.properties.District;
+  const area1 = feature.properties.suitable_area_km2_1 || 'N/A';
+  const area2 = feature.properties.suitable_area_km2_2 || 'N/A';
+  const area3 = feature.properties.suitable_area_km2_3 || 'N/A';
+
+  layer.bindPopup(
+    `<b>District:</b> ${districtName}<br>` +
+    `<b>Scenario 1 - Green Roof Area:</b> ${area1} km²<br>` +
+    `<b>Scenario 2 - Green Roof Area:</b> ${area2} km²<br>` +
+    `<b>Scenario 3 - Green Roof Area:</b> ${area3} km²`
+  );
+}
+
+// Create Layer Group for Districts
+const districtsLayer = L.layerGroup();
+
+// Load Districts GeoJSON layer
+fetch(districtsUrl)
+  .then(response => response.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: styleDistricts,
+      onEachFeature: onEachDistrict
+    }).addTo(districtsLayer);
+  })
+  .catch(err => console.error('Error loading Districts GeoJSON:', err));
+
+// Add Districts Layer to the map by default
+districtsLayer.addTo(map);
 
 // Building style
 function style(feature) {
@@ -135,24 +179,45 @@ const scenarioControl = L.Control.extend({
 });
 map.addControl(new scenarioControl());
 
-// Button event listeners
+// Button event listeners for scenarios
 document.getElementById('scenario1-btn').addEventListener('click', () => {
+  currentScenario = 1;
+  updateDistricts(); // Update district colors based on scenario 1
   map.removeLayer(scenario2Layer);
   map.removeLayer(scenario3Layer);
   scenario1Layer.addTo(map);
 });
 
 document.getElementById('scenario2-btn').addEventListener('click', () => {
+  currentScenario = 2;
+  updateDistricts(); // Update district colors based on scenario 2
   map.removeLayer(scenario1Layer);
   map.removeLayer(scenario3Layer);
   scenario2Layer.addTo(map);
 });
 
 document.getElementById('scenario3-btn').addEventListener('click', () => {
+  currentScenario = 3;
+  updateDistricts(); // Update district colors based on scenario 3
   map.removeLayer(scenario1Layer);
   map.removeLayer(scenario2Layer);
   scenario3Layer.addTo(map);
 });
+
+// Update the district layer's color when switching scenarios
+function updateDistricts() {
+  // Clear and reload the districts layer with the updated colors based on the selected scenario
+  districtsLayer.clearLayers();
+  fetch(districtsUrl)
+    .then(response => response.json())
+    .then(data => {
+      L.geoJSON(data, {
+        style: styleDistricts,
+        onEachFeature: onEachDistrict
+      }).addTo(districtsLayer);
+    })
+    .catch(err => console.error('Error loading Districts GeoJSON:', err));
+}
 
 // Info panel close button
 document.getElementById('close-btn').addEventListener('click', function () {
