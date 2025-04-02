@@ -9,6 +9,7 @@ html, body {
   height: 100%;
 }
 
+/* Info Legend */
 .info.legend {
   background: rgba(0, 0, 0, 0.6);
   color: white;
@@ -27,6 +28,7 @@ html, body {
   opacity: 0.9;
 }
 
+/* Info Panel */
 #info-panel {
   position: absolute;
   top: 50%; /* Vertically center */
@@ -79,7 +81,7 @@ html, body {
   background-color: #00b3cc;
 }
 
-/* Style for the custom scenario buttons */
+/* Custom Scenario Buttons */
 .leaflet-control-custom {
   background-color: rgba(0, 0, 0, 0.8);
   padding: 10px;
@@ -108,4 +110,21 @@ html, body {
 
 .scenario-btn:focus {
   outline: none;
+}
+
+/* Media Queries for Smaller Screens */
+@media (max-width: 768px) {
+  #info-panel {
+    width: 90vw; /* Make info panel take more width on smaller screens */
+    height: 80vh; /* Adjust height */
+  }
+  
+  .leaflet-control-custom {
+    width: 100%; /* Make the scenario control take full width */
+  }
+
+  .scenario-btn {
+    font-size: 16px; /* Reduce button size for smaller screens */
+    padding: 12px; /* Reduce button padding */
+  }
 }
