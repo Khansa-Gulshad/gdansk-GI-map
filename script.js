@@ -89,7 +89,10 @@ function loadGeoJSON(url, layerGroup) {
 
       map.fitBounds(layer.getBounds());
     })
-    .catch(err => console.error('Error loading GeoJSON:', err));
+    .catch(err => { 
+      hideLoading(); // Hide spinner in case of error
+      console.error('Error loading GeoJSON:', err);
+    });
 }
 
 // Layers
