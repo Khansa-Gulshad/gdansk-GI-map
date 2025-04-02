@@ -107,20 +107,16 @@ function loadGeoJSON(url, layerGroup) {
     .then(response => response.json())
     .then(data => {
       const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
-      const minScore = Math.min(...allScores);
-      const maxScore = Math.max(...allScores);
+      currentMin = Math.min(...allScores);
+      currentMax = Math.max(...allScores);
 
-      colorScale = colorScale.domain([minScore, maxScore]); // Update color scale domain
-      currentMin = minScore;
-      currentMax = maxScore;
+      colorScale = colorScale.domain([currentMin, currentMax]); // Update color scale domain
 
       // Create and update the appropriate legend (district or building)
       let currentLegend;
       if (url === districtsUrl) {
-        // Districts Legend
         currentLegend = districtLegend;
       } else {
-        // Buildings Legend
         currentLegend = buildingLegend;
       }
 
@@ -128,7 +124,6 @@ function loadGeoJSON(url, layerGroup) {
       if (currentLegend) {
         map.removeControl(currentLegend); // Remove the existing legend
       }
-
       currentLegend.addTo(map); // Add the correct legend to the map
 
       const layer = L.geoJSON(data, {
@@ -154,6 +149,10 @@ loadGeoJSON(scenario3Url, scenario3Layer);
 // Show Scenario 1 by default
 scenario1Layer.addTo(map);
 
+// Initialize global variables for currentMin and currentMax
+let currentMin = 0;
+let currentMax = 1;
+
 // Legend setup for districts
 let districtLegend = L.control({ position: 'bottomleft' });
 
@@ -162,7 +161,7 @@ districtLegend.onAdd = function () {
   const steps = 5;
   const stepSize = (currentMax - currentMin) / steps;
 
-  div.innerHTML += '<b>Potential Green Roof Area (Districts)</b><br>';
+  div.innerHTML += '<b>Greening Score (Districts)</b><br>';
   for (let i = 0; i < steps; i++) {
     const from = (currentMin + i * stepSize).toFixed(2);
     const to = (currentMin + (i + 1) * stepSize).toFixed(2);
