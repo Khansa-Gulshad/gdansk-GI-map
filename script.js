@@ -140,27 +140,45 @@ loadGeoJSON(scenario3Url, scenario3Layer);
 // Show Scenario 1 by default
 scenario1Layer.addTo(map);
 
-// Legend setup
-let legend = L.control({ position: 'bottomleft' });
-let currentMin = 0;
-let currentMax = 1;
+// Legend setup for districts
+let districtLegend = L.control({ position: 'bottomleft' });
 
-legend.onAdd = function () {
+districtLegend.onAdd = function () {
   const div = L.DomUtil.create('div', 'info legend');
   const steps = 5;
   const stepSize = (currentMax - currentMin) / steps;
 
-  div.innerHTML += '<b>Greening Score</b><br>';
+  div.innerHTML += '<b>Greening Score (Districts)</b><br>';
   for (let i = 0; i < steps; i++) {
     const from = (currentMin + i * stepSize).toFixed(2);
     const to = (currentMin + (i + 1) * stepSize).toFixed(2);
     const color = getColor((+from + +to) / 2);
     div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
   }
-
   return div;
 };
-legend.addTo(map);
+
+// Legend setup for buildings
+let buildingLegend = L.control({ position: 'bottomleft' });
+
+buildingLegend.onAdd = function () {
+  const div = L.DomUtil.create('div', 'info legend');
+  const steps = 5;
+  const stepSize = (currentMax - currentMin) / steps;
+
+  div.innerHTML += '<b>Greening Score (Buildings)</b><br>';
+  for (let i = 0; i < steps; i++) {
+    const from = (currentMin + i * stepSize).toFixed(2);
+    const to = (currentMin + (i + 1) * stepSize).toFixed(2);
+    const color = getColor((+from + +to) / 2);
+    div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
+  }
+  return div;
+};
+
+// Start with the district legend visible
+let currentLegend = districtLegend;
+currentLegend.addTo(map);
 
 // Custom scenario buttons
 const scenarioControl = L.Control.extend({
@@ -177,38 +195,47 @@ const scenarioControl = L.Control.extend({
 });
 map.addControl(new scenarioControl());
 
-// Button event listeners for scenarios
+// Button event listeners for scenarios (simplified)
 document.getElementById('scenario1-btn').addEventListener('click', () => {
   currentScenario = 1;
   updateDistricts(); // Update district colors based on scenario 1
-  map.removeLayer(scenario2Layer);
-  map.removeLayer(scenario3Layer);
-  scenario1Layer.addTo(map);
 });
 
 document.getElementById('scenario2-btn').addEventListener('click', () => {
   currentScenario = 2;
   updateDistricts(); // Update district colors based on scenario 2
-  map.removeLayer(scenario1Layer);
-  map.removeLayer(scenario3Layer);
-  scenario2Layer.addTo(map);
 });
 
 document.getElementById('scenario3-btn').addEventListener('click', () => {
   currentScenario = 3;
   updateDistricts(); // Update district colors based on scenario 3
-  map.removeLayer(scenario1Layer);
-  map.removeLayer(scenario2Layer);
-  scenario3Layer.addTo(map);
 });
 
-// Update the district layer's color when switching scenarios
+
+// Update the district layer's color and the legend
 function updateDistricts() {
-  // Clear and reload the districts layer with the updated colors based on the selected scenario
   districtsLayer.clearLayers();
+  
   fetch(districtsUrl)
     .then(response => response.json())
     .then(data => {
+      const allScores = data.features.map(f => parseFloat(f.properties[`suitable_area_km2_${currentScenario}`]));
+      const minScore = Math.min(...allScores);
+      const maxScore = Math.max(...allScores);
+
+      currentMin = minScore;
+      currentMax = maxScore;
+
+      colorScale = colorScale.domain([currentMin, currentMax]); // Update color scale domain
+
+      // Update the legend with new min/max
+      if (currentLegend !== districtLegend) {
+        map.removeControl(currentLegend);
+        currentLegend = districtLegend;
+        currentLegend.addTo(map);
+      }
+
+      // Re-render the districts layer with updated colors
       L.geoJSON(data, {
         style: styleDistricts,
         onEachFeature: onEachDistrict
@@ -219,20 +246,27 @@ function updateDistricts() {
 
 // Add Zoom Event to switch layers dynamically
 map.on('zoomend', function () {
-  if (map.getZoom() > 12) { // Adjust the zoom level for when to hide the district layer
+  if (map.getZoom() > 12) { // Zoomed in, show building layers
     if (map.hasLayer(districtsLayer)) {
       districtsLayer.remove();
     }
+
     // Add building layers depending on the selected scenario
     if (currentScenario === 1) {
-      scenario1Layer.addTo(map);
+      loadGeoJSON(scenario1Url, scenario1Layer); // Add building scenario 1 layer
     } else if (currentScenario === 2) {
-      scenario2Layer.addTo(map);
+      loadGeoJSON(scenario2Url, scenario2Layer); // Add building scenario 2 layer
     } else if (currentScenario === 3) {
-      scenario3Layer.addTo(map);
+      loadGeoJSON(scenario3Url, scenario3Layer); // Add building scenario 3 layer
     }
-  } else {
-    // Show district layer if zoom level is less than or equal to 12
+
+    // Update to building legend
+    if (currentLegend !== buildingLegend) {
+      map.removeControl(currentLegend);
+      currentLegend = buildingLegend;
+      currentLegend.addTo(map);
+    }
+  } else { // Zoomed out, show district layers
     if (!map.hasLayer(districtsLayer)) {
       districtsLayer.addTo(map);
     }
@@ -240,6 +274,13 @@ map.on('zoomend', function () {
     map.removeLayer(scenario1Layer);
     map.removeLayer(scenario2Layer);
     map.removeLayer(scenario3Layer);
+
+    // Update to district legend
+    if (currentLegend !== districtLegend) {
+      map.removeControl(currentLegend);
+      currentLegend = districtLegend;
+      currentLegend.addTo(map);
+    }
   }
 });
 
