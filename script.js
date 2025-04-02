@@ -163,7 +163,7 @@ function loadGeoJSON(url, layerGroup) {
   fetch(url)
     .then(response => response.json())
     .then(data => {
-      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
+      const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof)); // Example for building data
       currentMin = Math.min(...allScores); // Update min score dynamically
       currentMax = Math.max(...allScores); // Update max score dynamically
 
