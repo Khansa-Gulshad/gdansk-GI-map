@@ -219,6 +219,32 @@ function updateDistricts() {
     .catch(err => console.error('Error loading Districts GeoJSON:', err));
 }
 
+// Add Zoom Event to switch layers dynamically
+map.on('zoomend', function () {
+  if (map.getZoom() > 12) { // Adjust the zoom level for when to hide the district layer
+    if (map.hasLayer(districtsLayer)) {
+      districtsLayer.remove();
+    }
+    // Add building layers depending on the selected scenario
+    if (currentScenario === 1) {
+      scenario1Layer.addTo(map);
+    } else if (currentScenario === 2) {
+      scenario2Layer.addTo(map);
+    } else if (currentScenario === 3) {
+      scenario3Layer.addTo(map);
+    }
+  } else {
+    // Show district layer if zoom level is less than or equal to 12
+    if (!map.hasLayer(districtsLayer)) {
+      districtsLayer.addTo(map);
+    }
+    // Remove building layers when zoomed out
+    map.removeLayer(scenario1Layer);
+    map.removeLayer(scenario2Layer);
+    map.removeLayer(scenario3Layer);
+  }
+});
+
 // Info panel close button
 document.getElementById('close-btn').addEventListener('click', function () {
   document.getElementById('info-panel').style.display = 'none';
