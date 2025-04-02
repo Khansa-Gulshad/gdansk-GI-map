@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive map displaying the greening potential of rooftops in Gdańsk based on factors like slope, height, and area." />
+  <meta name="keywords" content="Gdańsk, Green Roof, Map, Slope, Height, Area, GeoJSON" />
+  <meta name="author" content="Your Name" />
   <title>Gdańsk Green Roof Map</title>
 
   <!-- Leaflet CSS -->
@@ -15,7 +18,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- INFO PANEL HERE -->
+  <!-- INFO PANEL -->
   <div id="info-panel" class="info-panel">
     <h2>Green Roof Suitability</h2>
     <p>
@@ -31,11 +34,11 @@
       ⚠️ This analysis is based on static building features and does not account for dynamic
       factors like structural integrity, climate impact, or ownership limitations.
     </p>
-    <button id="close-btn">Explore the Map</button>
+    <button id="close-btn" aria-label="Close information panel and explore the map">Explore the Map</button>
   </div>
 
   <!-- MAP -->
-  <div id="map"></div>
+  <div id="map" aria-label="Interactive map showing green roof suitability in Gdańsk"></div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
