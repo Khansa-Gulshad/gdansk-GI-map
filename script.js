@@ -47,10 +47,11 @@ function styleDistricts(feature) {
 // Popups for districts showing the area for each scenario
 function onEachDistrict(feature, layer) {
   const districtName = feature.properties.District;
-  // If no value, set to 0. Otherwise, format to 2 decimal places.
-  const area1 = feature.properties.suitable_area_km2_1 !== Null ? feature.properties.suitable_area_km2_1.toFixed(2) : '0.00';
-  const area2 = feature.properties.suitable_area_km2_2 !== Null ? feature.properties.suitable_area_km2_2.toFixed(2) : '0.00';
-  const area3 = feature.properties.suitable_area_km2_3 !== Null ? feature.properties.suitable_area_km2_3.toFixed(2) : '0.00';
+  
+  // If value is null or undefined, set to 0. Otherwise, format to 2 decimal places.
+  const area1 = (feature.properties.suitable_area_km2_1 != null) ? feature.properties.suitable_area_km2_1.toFixed(2) : '0.00';
+  const area2 = (feature.properties.suitable_area_km2_2 != null) ? feature.properties.suitable_area_km2_2.toFixed(2) : '0.00';
+  const area3 = (feature.properties.suitable_area_km2_3 != null) ? feature.properties.suitable_area_km2_3.toFixed(2) : '0.00';
 
   layer.bindPopup(
     `<b>District:</b> ${districtName}<br>` +
