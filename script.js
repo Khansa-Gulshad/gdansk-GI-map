@@ -51,6 +51,21 @@ function onEachFeature(feature, layer) {
   }
 }
 
+// Show loading spinner
+function showLoading() {
+  const loadingSpinner = document.createElement('div');
+  loadingSpinner.id = 'loading-spinner';
+  loadingSpinner.innerHTML = 'Loading data...';
+  document.body.appendChild(loadingSpinner);
+}
+
+function hideLoading() {
+  const loadingSpinner = document.getElementById('loading-spinner');
+  if (loadingSpinner) {
+    loadingSpinner.remove();
+  }
+}
+
 // Dynamic GeoJSON loader with color scale + legend update
 function loadGeoJSON(url, layerGroup) {
   fetch(url)
