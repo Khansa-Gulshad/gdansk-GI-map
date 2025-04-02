@@ -110,12 +110,26 @@ function loadGeoJSON(url, layerGroup) {
       const minScore = Math.min(...allScores);
       const maxScore = Math.max(...allScores);
 
-      colorScale = colorScale.domain([minScore, maxScore]); // Update range
+      colorScale = colorScale.domain([minScore, maxScore]); // Update color scale domain
       currentMin = minScore;
       currentMax = maxScore;
 
-      legend.remove();
-      legend.addTo(map);
+      // Create and update the appropriate legend (district or building)
+      let currentLegend;
+      if (url === districtsUrl) {
+        // Districts Legend
+        currentLegend = districtLegend;
+      } else {
+        // Buildings Legend
+        currentLegend = buildingLegend;
+      }
+
+      // Remove the old legend and add the new one
+      if (currentLegend) {
+        map.removeControl(currentLegend); // Remove the existing legend
+      }
+
+      currentLegend.addTo(map); // Add the correct legend to the map
 
       const layer = L.geoJSON(data, {
         style: style,
