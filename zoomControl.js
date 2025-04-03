@@ -1,4 +1,5 @@
 // Zoom-based layer control: dynamically show layers based on zoom level
+map.on('zoomend', function () {
   const currentZoom = map.getZoom();
   
   // If zoom level > 12, show the building layers, otherwise show the district and grid layers
@@ -22,14 +23,14 @@
       gridLayer.setStyle({ opacity: 0 });  // Hide grid but keep the layer loaded
     }
   } else {
-    // Show district and grid layers when zoomed out
+    // Ensure that grid and district layers are added when zoomed out
     if (!map.hasLayer(districtsLayer)) {
       districtsLayer.addTo(map); // Add district layer when zoomed out
     }
     if (!map.hasLayer(gridLayer)) {
       gridLayer.addTo(map); // Add grid layer when zoomed out
     }
-
+    
     // Remove building layers when zoomed out
     if (map.hasLayer(scenario1Layer)) {
       scenario1Layer.remove();
