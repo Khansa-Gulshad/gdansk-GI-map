@@ -75,7 +75,7 @@ function updateLegends(data, currentScenario) {
 
     // Create new legends with appropriate titles
     districtLegend = createLegend(
-      'Greening Score (Districts)', 
+      'Potential Green Roof Area (Districts)', 
       currentMin, 
       currentMax,
       'bottomleft'
@@ -89,7 +89,7 @@ function updateLegends(data, currentScenario) {
     ).addTo(map);
 
     gridLegend = createLegend(
-      'Grid Scores', 
+      'Potential Green Roof Area', 
       currentMin, 
       currentMax,
       'bottomleft'
