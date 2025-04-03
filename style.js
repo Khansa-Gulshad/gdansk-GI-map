@@ -1,11 +1,15 @@
 // Create base color scale
 let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
 
+function getColor(value) {
+  return colorScale(value).hex();  // Return the color corresponding to the value
+}
+
+// Function to update the color scale based on GeoJSON data
 function updateColorScale(data) {
   const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
   const minScore = Math.min(...allScores);
   const maxScore = Math.max(...allScores);
-
   colorScale.domain([minScore, maxScore]);
 }
 
