@@ -1,6 +1,6 @@
 // scenarioControl.js
 
-/ scenarioControl.js
+// scenarioControl.js
 document.addEventListener('DOMContentLoaded', function() {
   if (!window.geojsonLoader) {  // lowercase to match
     console.error("geojsonLoader not found!");
