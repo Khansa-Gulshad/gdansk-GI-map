@@ -104,6 +104,8 @@ loadInitialLayers().catch(err => {
   console.error("Error loading initial layers:", err);
 });
 
-// Add to bottom of geojsonLoader.js
-window.updateLayersForScenario = updateLayersForScenario;
-window.loadInitialLayers = loadInitialLayers;
+// At the bottom, expose only the necessary functions
+window.geoJSONLoader = {
+  updateLayersForScenario,
+  loadInitialLayers
+};
