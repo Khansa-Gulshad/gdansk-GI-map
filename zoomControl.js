@@ -4,14 +4,14 @@ map.on('zoomend', function () {
   
   // If zoom level > 12, show the building layers, otherwise show the district and grid layers
   if (currentZoom > 12) {
-    // Show building layers when zoomed in
-    if (!map.hasLayer(scenario1Layer)) {
+    // Show building layers when zoomed in (for the current scenario)
+    if (!map.hasLayer(scenario1Layer) && currentScenario === 1) {
       loadScenarioLayer(scenario1Url, scenario1Layer); // Add building layer for scenario 1
     }
-    if (!map.hasLayer(scenario2Layer)) {
+    if (!map.hasLayer(scenario2Layer) && currentScenario === 2) {
       loadScenarioLayer(scenario2Url, scenario2Layer); // Add building layer for scenario 2
     }
-    if (!map.hasLayer(scenario3Layer)) {
+    if (!map.hasLayer(scenario3Layer) && currentScenario === 3) {
       loadScenarioLayer(scenario3Url, scenario3Layer); // Add building layer for scenario 3
     }
     
