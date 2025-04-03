@@ -1,41 +1,50 @@
 // scenarioControl.js
 
-// Scenario button event listeners - SIMPLE VERSION THAT WORKS
+// Scenario button event listeners
 document.getElementById('scenario1-btn').addEventListener('click', () => {
   currentScenario = 1;
-  updateLayersForScenario(currentScenario);
-  updateActiveLayerLegend();
+  updateLayersForScenario(currentScenario)
+    .then(() => updateActiveLayerLegend())
+    .catch(err => console.error("Scenario change error:", err));
 });
 
 document.getElementById('scenario2-btn').addEventListener('click', () => {
   currentScenario = 2;
-  updateLayersForScenario(currentScenario);
-  updateActiveLayerLegend();
+  updateLayersForScenario(currentScenario)
+    .then(() => updateActiveLayerLegend())
+    .catch(err => console.error("Scenario change error:", err));
 });
 
 document.getElementById('scenario3-btn').addEventListener('click', () => {
   currentScenario = 3;
-  updateLayersForScenario(currentScenario);
-  updateActiveLayerLegend();
+  updateLayersForScenario(currentScenario)
+    .then(() => updateActiveLayerLegend())
+    .catch(err => console.error("Scenario change error:", err));
 });
 
-// Helper function to update legend for active layer
+// Helper function to update legend for currently active layer
 function updateActiveLayerLegend() {
   const currentZoom = map.getZoom();
   
   if (currentZoom > 12) {
-    // Buildings layer
-    updateLegends(buildingsData, currentScenario, 'buildings');
+    // Buildings layer active
+    if (buildingsData) {
+      updateLegends(buildingsData, currentScenario, 'buildings');
+    }
   } else if (currentZoom > 10) {
-    // Grid layer
-    updateLegends(gridData, currentScenario, 'grid');
+    // Grid layer active
+    if (gridData) {
+      updateLegends(gridData, currentScenario, 'grid');
+    }
   } else {
-    // Districts layer
-    updateLegends(districtsData, currentScenario, 'districts');
+    // Districts layer active
+    if (districtsData) {
+      updateLegends(districtsData, currentScenario, 'districts');
+    }
   }
 }
 
-// Initial legend update (call this after layers load)
-function initializeLegends() {
-  updateActiveLayerLegend();
-}
+// Initial legend update after all layers load
+loadInitialLayers()
+  .then(() => updateActiveLayerLegend())
+  .catch(err => console.error("Initial load error:", err));
