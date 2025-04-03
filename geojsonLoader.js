@@ -82,18 +82,3 @@ function updateLayersForScenario(currentScenario) {
   updateLegends(currentScenario);
 }
 
-// Handling scenario button click events to change the scenario
-document.getElementById('scenario1-btn').addEventListener('click', () => {
-  currentScenario = 1;
-  updateLayersForScenario(currentScenario);  // Update map layers and legend for Scenario 1
-});
-
-document.getElementById('scenario2-btn').addEventListener('click', () => {
-  currentScenario = 2;
-  updateLayersForScenario(currentScenario);  // Update map layers and legend for Scenario 2
-});
-
-document.getElementById('scenario3-btn').addEventListener('click', () => {
-  currentScenario = 3;
-  updateLayersForScenario(currentScenario);  // Update map layers and legend for Scenario 3
-});
