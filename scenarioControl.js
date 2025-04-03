@@ -26,25 +26,18 @@ document.getElementById('scenario3-btn').addEventListener('click', () => {
 function updateActiveLayerLegend() {
   const currentZoom = map.getZoom();
   
-  if (currentZoom > 12) {
-    // Buildings layer active
-    if (buildingsData) {
-      updateLegends(buildingsData, currentScenario, 'buildings');
-    }
-  } else if (currentZoom > 10) {
-    // Grid layer active
-    if (gridData) {
-      updateLegends(gridData, currentScenario, 'grid');
-    }
-  } else {
-    // Districts layer active
-    if (districtsData) {
-      updateLegends(districtsData, currentScenario, 'districts');
-    }
+  if (currentZoom > 12 && window.buildingsData) {
+    updateLegends(window.buildingsData, window.currentScenario, 'buildings');
+  } else if (currentZoom > 10 && window.gridData) {
+    updateLegends(window.gridData, window.currentScenario, 'grid');
+  } else if (window.districtsData) {
+    updateLegends(window.districtsData, window.currentScenario, 'districts');
   }
 }
 
-// Initial legend update after all layers load
-loadInitialLayers()
-  .then(() => updateActiveLayerLegend())
-  .catch(err => console.error("Initial load error:", err));
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+  geoJSONLoader.loadInitialLayers()
+    .then(() => updateActiveLayerLegend())
+    .catch(err => console.error("Initial load error:", err));
+});
