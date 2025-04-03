@@ -259,7 +259,7 @@ function updateDistricts() {
 map.on('zoomend', function () {
   if (map.getZoom() > 12) { // Zoomed in, show building layers
     if (map.hasLayer(districtsLayer)) {
-      districtsLayer.remove();
+      districtsLayer.remove(); // Remove district layer if zoomed in
     }
 
     // Add building layers depending on the selected scenario
@@ -271,7 +271,7 @@ map.on('zoomend', function () {
       loadGeoJSON(scenario3Url, scenario3Layer); // Add building scenario 3 layer
     }
 
-    // Update to building legend
+    // Remove the district legend and show building legend
     if (currentLegend !== buildingLegend) {
       map.removeControl(currentLegend);
       currentLegend = buildingLegend;
@@ -279,14 +279,15 @@ map.on('zoomend', function () {
     }
   } else { // Zoomed out, show district layers
     if (!map.hasLayer(districtsLayer)) {
-      districtsLayer.addTo(map);
+      districtsLayer.addTo(map); // Add district layer when zoomed out
     }
+
     // Remove building layers when zoomed out
     map.removeLayer(scenario1Layer);
     map.removeLayer(scenario2Layer);
     map.removeLayer(scenario3Layer);
 
-    // Update to district legend
+    // Remove the building legend and show district legend
     if (currentLegend !== districtLegend) {
       map.removeControl(currentLegend);
       currentLegend = districtLegend;
