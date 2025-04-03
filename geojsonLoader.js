@@ -12,25 +12,25 @@ let scenario1Layer = L.layerGroup();
 let scenario2Layer = L.layerGroup();
 let scenario3Layer = L.layerGroup();
 
-// Function to load and add a GeoJSON layer
+// Function to load and add a GeoJSON layer (districts, grid)
 function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc) {
   fetch(url)
     .then(response => response.json())
     .then(data => {
-      updateColorScale(data); // Update color scale with loaded data
+      updateColorScale(data, currentScenario); // Update color scale with loaded data
       L.geoJSON(data, {
-        style: styleFunc, // Apply the style function (e.g., styleDistricts, styleGrid)
-        onEachFeature: featureFunc // Apply the feature function (e.g., onEachDistrictFeature)
+        style: styleFunc, // Apply style function (e.g., styleDistricts, styleGrid)
+        onEachFeature: featureFunc // Apply feature function (e.g., onEachDistrictFeature)
       }).addTo(layerGroup);
-      updateLegends(data); // Call updateLegends to update the legends based on new data
+      updateLegends(data, currentScenario); // Update legends based on new scenario data
     })
     .catch(err => console.error(`Error loading GeoJSON for ${url}:`, err));
 }
 
-// Load and add the Districts layer
+// Load and add the Districts layer for the initial scenario (default scenario 1)
 loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature);
 
-// Load and add the Grid layer
+// Load and add the Grid layer for the initial scenario (default scenario 1)
 loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature);
 
 // Function to load building scenario layers based on zoom level
@@ -38,12 +38,12 @@ function loadScenarioLayer(url, layerGroup) {
   fetch(url)
     .then(response => response.json())
     .then(data => {
-      updateColorScale(data); // Update color scale with loaded building data
+      updateColorScale(data, currentScenario); // Update color scale with loaded building data
       L.geoJSON(data, {
         style: styleBuildings, // Apply style for buildings
         onEachFeature: onEachBuildingFeature // Apply feature function for buildings
       }).addTo(layerGroup);
-      updateLegends(data); // Call updateLegends to update the legends based on new data
+      updateLegends(data, currentScenario); // Update the legends based on new data
     })
     .catch(err => console.error(`Error loading GeoJSON for scenario: ${url}`, err));
 }
