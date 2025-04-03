@@ -1,4 +1,5 @@
 // scenarioControl.js
+
 // Wait for DOM and dependencies to load
 document.addEventListener('DOMContentLoaded', function() {
   // Verify the loader is available
@@ -11,30 +12,30 @@ document.addEventListener('DOMContentLoaded', function() {
   window.geoJSONLoader.loadInitialLayers()
     .then(() => updateActiveLayerLegend())
     .catch(err => console.error("Initial load error:", err));
-  
-// Scenario button event listeners
-document.getElementById('scenario1-btn').addEventListener('click', () => {
-  window.currentScenario = 1;
-  geojsonLoader.updateLayersForScenario(window.currentScenario)
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Scenario change error:", err));
-});
 
-document.getElementById('scenario2-btn').addEventListener('click', () => {
-  window.currentScenario = 2;
-  geojsonLoader.updateLayersForScenario(window.currentScenario)
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Scenario change error:", err));
-});
+  // Scenario button event listeners
+  document.getElementById('scenario1-btn')?.addEventListener('click', () => {
+    window.currentScenario = 1;
+    window.geoJSONLoader.updateLayersForScenario(window.currentScenario)
+      .then(() => updateActiveLayerLegend())
+      .catch(err => console.error("Scenario change error:", err));
+  });
 
-document.getElementById('scenario3-btn').addEventListener('click', () => {
-  window.currentScenario = 3;
-  geojsonLoader.updateLayersForScenario(window.currentScenario)
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Scenario change error:", err));
-});
+  document.getElementById('scenario2-btn')?.addEventListener('click', () => {
+    window.currentScenario = 2;
+    window.geoJSONLoader.updateLayersForScenario(window.currentScenario)
+      .then(() => updateActiveLayerLegend())
+      .catch(err => console.error("Scenario change error:", err));
+  });
 
-// Helper function to update legend for currently active layer
+  document.getElementById('scenario3-btn')?.addEventListener('click', () => {
+    window.currentScenario = 3;
+    window.geoJSONLoader.updateLayersForScenario(window.currentScenario)
+      .then(() => updateActiveLayerLegend())
+      .catch(err => console.error("Scenario change error:", err));
+  });
+}); // <-- This closes the DOMContentLoaded callback
+
 function updateActiveLayerLegend() {
   const currentZoom = map?.getZoom() || 0;
   
