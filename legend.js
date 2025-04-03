@@ -1,6 +1,16 @@
-// Initialize legends for districts and buildings
-let districtLegend = L.control({ position: 'bottomleft' });
-let buildingLegend = L.control({ position: 'bottomleft' });
+// Function to calculate min/max values for color scale
+function calculateMinMax(data) {
+  const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
+  const currentMin = Math.min(...allScores);
+  const currentMax = Math.max(...allScores);
+  return { currentMin, currentMax };
+}
+
+// Function to update the color scale dynamically
+function updateColorScale(data) {
+  const { currentMin, currentMax } = calculateMinMax(data);
+  colorScale.domain([currentMin, currentMax]);
+}
 
 // Function to update the legends dynamically
 function updateLegends(data) {
@@ -15,6 +25,7 @@ function updateLegends(data) {
   }
 
   // Update the district legend
+  districtLegend = L.control({ position: 'bottomleft' });
   districtLegend.onAdd = function () {
     const div = L.DomUtil.create('div', 'info legend');
     const steps = 5;
@@ -29,11 +40,10 @@ function updateLegends(data) {
     }
     return div;
   };
-
-  // Add district legend to the map
   districtLegend.addTo(map);
 
   // Update the building legend similarly
+  buildingLegend = L.control({ position: 'bottomleft' });
   buildingLegend.onAdd = function () {
     const div = L.DomUtil.create('div', 'info legend');
     const steps = 5;
@@ -48,7 +58,5 @@ function updateLegends(data) {
     }
     return div;
   };
-
-  // Add building legend to the map
   buildingLegend.addTo(map);
 }
