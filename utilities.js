@@ -1,6 +1,8 @@
 // utilities.js
-
-// Helper function to safely parse values, treating null/undefined as 0
 function safeParse(value) {
-  return value === null || value === undefined || isNaN(value) ? 0 : parseFloat(value);
+  return value === null || value === undefined ? 0 : parseFloat(value);
 }
+
+// Make these available globally since they're used across files
+let districtsData, gridData, buildingsData;
+let currentScenario = 1; // Default scenario
