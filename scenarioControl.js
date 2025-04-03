@@ -3,8 +3,8 @@
 // Wait for DOM and dependencies to load
 document.addEventListener('DOMContentLoaded', function() {
   // Verify the loader is available
-  if (!window.geoJSONLoader) {
-    console.error("geoJSONLoader not found!");
+  if (!window.geojsonLoaderr) {
+    console.error("geojsonLoader not found!");
     return;
   }
 
