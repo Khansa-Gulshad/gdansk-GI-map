@@ -12,73 +12,94 @@ let scenario1Layer = L.layerGroup();
 let scenario2Layer = L.layerGroup();
 let scenario3Layer = L.layerGroup();
 
-// Function to load and add a GeoJSON layer (districts, grid, buildings)
-function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc) {
-  fetch(url)
+// Store loaded GeoJSON data globally
+let districtsData, gridData, buildingsData;
+
+// Function to load and add a GeoJSON layer
+function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc, isBuildingLayer = false) {
+  return fetch(url)  // Return the promise
     .then(response => response.json())
     .then(data => {
-      updateColorScale(data, currentScenario); // Update color scale with loaded data based on scenario
+      // Store the data based on layer type
+      if (url === districtsUrl) districtsData = data;
+      else if (url === gridUrl) gridData = data;
+      else if (isBuildingLayer) buildingsData = data;
+
+      updateColorScale(data, currentScenario);
       L.geoJSON(data, {
-        style: styleFunc,  // Apply style function (e.g., styleDistricts, styleGrid, styleBuildings)
-        onEachFeature: featureFunc  // Apply feature function (e.g., onEachDistrictFeature, onEachGridFeature, onEachBuildingFeature)
+        style: styleFunc,
+        onEachFeature: featureFunc
       }).addTo(layerGroup);
-      updateLegends(data, currentScenario);  // Update legends based on new scenario data
+      
+      return data; // Return data for further processing
     })
-    .catch(err => console.error(`Error loading GeoJSON for ${url}:`, err));
+    .catch(err => {
+      console.error(`Error loading GeoJSON for ${url}:`, err);
+      throw err; // Re-throw to handle in calling function
+    });
 }
 
-// Function to load the Districts layer for the selected scenario
+// Function to load the Districts layer
 function loadDistrictsLayer() {
-  loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature);
-}
-
-// Function to load the Grid layer for the selected scenario
-function loadGridLayer() {
-  loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature);
-}
-
-// Function to load building scenario layers based on zoom level and scenario selection
-function loadScenarioLayer(url, layerGroup) {
-  fetch(url)
-    .then(response => response.json())
+  return loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature)
     .then(data => {
-      updateColorScale(data, currentScenario); // Update color scale for buildings based on the selected scenario
-      L.geoJSON(data, {
-        style: styleBuildings,  // Apply style for buildings
-        onEachFeature: onEachBuildingFeature  // Apply feature function for buildings
-      }).addTo(layerGroup);
-      updateLegends(data, currentScenario);  // Update legend dynamically based on the selected scenario
-    })
-    .catch(err => console.error(`Error loading GeoJSON for scenario: ${url}`, err));
+      updateLegends(data, currentScenario, 'districts');
+      return data;
+    });
 }
 
-// Load the initial layers for the map (Districts and Grid for the default scenario 1)
-loadDistrictsLayer();  // Load the District layer for the initial scenario
-loadGridLayer();  // Load the Grid layer for the initial scenario
+// Function to load the Grid layer
+function loadGridLayer() {
+  return loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature)
+    .then(data => {
+      updateLegends(data, currentScenario, 'grid');
+      return data;
+    });
+}
 
-// Function to update layers dynamically based on the current scenario
+// Function to load building scenario layers
+function loadScenarioLayer(url, layerGroup) {
+  return loadGeoJSONLayer(url, layerGroup, styleBuildings, onEachBuildingFeature, true)
+    .then(data => {
+      updateLegends(data, currentScenario, 'buildings');
+      return data;
+    });
+}
+
+// Load initial layers (returns promise for all initial loads)
+function loadInitialLayers() {
+  return Promise.all([
+    loadDistrictsLayer(),
+    loadGridLayer()
+  ]);
+}
+
+// Function to update layers dynamically based on current scenario
 function updateLayersForScenario(currentScenario) {
-  // Remove old layers before re-adding new ones for the updated scenario
+  // Clear existing layers
   districtsLayer.clearLayers();
   gridLayer.clearLayers();
   scenario1Layer.clearLayers();
   scenario2Layer.clearLayers();
   scenario3Layer.clearLayers();
 
-  // Load the appropriate scenario data
-  loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature);  // Reload districts for the selected scenario
-  loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature);  // Reload grid for the selected scenario
-
-  // Depending on the scenario, load the appropriate building layers
-  if (currentScenario === 1) {
-    loadScenarioLayer(scenario1Url, scenario1Layer);  // Load scenario 1 buildings
-  } else if (currentScenario === 2) {
-    loadScenarioLayer(scenario2Url, scenario2Layer);  // Load scenario 2 buildings
-  } else if (currentScenario === 3) {
-    loadScenarioLayer(scenario3Url, scenario3Layer);  // Load scenario 3 buildings
-  }
-
-  // Update legend based on the selected scenario
-  updateLegends(currentScenario);
+  // Reload layers for new scenario
+  return Promise.all([
+    loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature),
+    loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature)
+  ]).then(() => {
+    // Load appropriate building layer based on scenario
+    if (currentScenario === 1) {
+      return loadScenarioLayer(scenario1Url, scenario1Layer);
+    } else if (currentScenario === 2) {
+      return loadScenarioLayer(scenario2Url, scenario2Layer);
+    } else if (currentScenario === 3) {
+      return loadScenarioLayer(scenario3Url, scenario3Layer);
+    }
+  });
 }
 
+// Initialize the map
+loadInitialLayers().catch(err => {
+  console.error("Error loading initial layers:", err);
+});
