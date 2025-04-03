@@ -12,39 +12,36 @@ let scenario1Layer = L.layerGroup();
 let scenario2Layer = L.layerGroup();
 let scenario3Layer = L.layerGroup();
 
+// Function to load and add a GeoJSON layer
+function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc) {
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      updateColorScale(data); // Update color scale with loaded data
+      L.geoJSON(data, {
+        style: styleFunc, // Apply the style function (e.g., styleDistricts, styleGrid)
+        onEachFeature: featureFunc // Apply the feature function (e.g., onEachDistrictFeature)
+      }).addTo(layerGroup);
+      updateLegends(data); // Call updateLegends to update the legends based on new data
+    })
+    .catch(err => console.error(`Error loading GeoJSON for ${url}:`, err));
+}
+
 // Load and add the Districts layer
-fetch(districtsUrl)
-  .then(response => response.json())
-  .then(data => {
-    updateColorScale(data); // Update color scale with loaded data
-    L.geoJSON(data, {
-      style: styleDistricts, // Apply updated style
-      onEachFeature: onEachDistrictFeature
-    }).addTo(districtsLayer);
-    updateLegends(data); // Update legends dynamically
-  })
-  .catch(err => console.error('Error loading Districts GeoJSON:', err));
+loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature);
 
 // Load and add the Grid layer
-fetch(gridUrl)
-  .then(response => response.json())
-  .then(data => {
-    L.geoJSON(data, {
-      style: styleGrid, // Apply updated style for grid
-      onEachFeature: onEachGridFeature
-    }).addTo(gridLayer);
-  })
-  .catch(err => console.error('Error loading Grid GeoJSON:', err));
+loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature);
 
-// Load Building Scenario Layers (will be added on zoom in)
+// Function to load building scenario layers based on zoom level
 function loadScenarioLayer(url, layerGroup) {
   fetch(url)
     .then(response => response.json())
     .then(data => {
       updateColorScale(data); // Update color scale with loaded building data
       L.geoJSON(data, {
-        style: styleBuildings, // Apply updated style for buildings
-        onEachFeature: onEachBuildingFeature
+        style: styleBuildings, // Apply style for buildings
+        onEachFeature: onEachBuildingFeature // Apply feature function for buildings
       }).addTo(layerGroup);
       updateLegends(data); // Call updateLegends to update the legends based on new data
     })
