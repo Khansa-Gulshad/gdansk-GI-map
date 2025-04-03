@@ -35,26 +35,25 @@ function calculateMinMax(data, currentScenario) {
   }
 }
 
-// Function to generate a single legend (DRY principle - Don't Repeat Yourself)
-function createLegend(title, currentMin, currentMax, position = 'bottomleft') {
+// Modified createLegend function to support units
+function createLegend(title, currentMin, currentMax, position = 'bottomleft', unit = '') {
   const legend = L.control({ position });
   
   legend.onAdd = function() {
     const div = L.DomUtil.create('div', 'info legend');
     const steps = 5;
-    
-    // Handle case where min equals max (all values same)
-    const effectiveMin = currentMin;
     const effectiveMax = currentMax === currentMin ? currentMax + 1 : currentMax;
-    const stepSize = (effectiveMax - effectiveMin) / steps;
+    const stepSize = (effectiveMax - currentMin) / steps;
 
-    div.innerHTML = `<b>${title}</b><br>`;
+    // Add unit to title if provided
+    const titleWithUnit = unit ? `${title} (${unit})` : title;
+    div.innerHTML = `<b>${titleWithUnit}</b><br>`;
     
     for (let i = 0; i < steps; i++) {
-      const from = (effectiveMin + i * stepSize).toFixed(2);
-      const to = (effectiveMin + (i + 1) * stepSize).toFixed(2);
+      const from = (currentMin + i * stepSize).toFixed(2);
+      const to = (currentMin + (i + 1) * stepSize).toFixed(2);
       const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
-      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
+      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}${unit ? ' ' + unit : ''}<br>`;
     }
     
     return div;
@@ -63,8 +62,8 @@ function createLegend(title, currentMin, currentMax, position = 'bottomleft') {
   return legend;
 }
 
-// Function to update all legends dynamically
-function updateLegends(data, currentScenario) {
+// Modified updateLegends to handle active layer
+function updateLegends(data, currentScenario, activeLayer) {
   try {
     const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
 
@@ -73,27 +72,38 @@ function updateLegends(data, currentScenario) {
       if (map.hasControl(legend)) map.removeControl(legend);
     });
 
-    // Create new legends with appropriate titles
-    districtLegend = createLegend(
-      'Potential Green Roof Area (Districts)', 
-      currentMin, 
-      currentMax,
-      'bottomleft'
-    ).addTo(map);
-
-    buildingLegend = createLegend(
-      'Greening Score (Buildings)', 
-      currentMin, 
-      currentMax,
-      'bottomleft'
-    ).addTo(map);
-
-    gridLegend = createLegend(
-      'Potential Green Roof Area', 
-      currentMin, 
-      currentMax,
-      'bottomleft'
-    ).addTo(map);
+    // Only create legend for active layer
+    switch(activeLayer) {
+      case 'districts':
+        districtLegend = createLegend(
+          'Suitable Area - Districts', 
+          currentMin, 
+          currentMax,
+          'bottomleft',
+          'km²'
+        ).addTo(map);
+        break;
+        
+      case 'grid':
+        gridLegend = createLegend(
+          'Suitable Area - Grid', 
+          currentMin, 
+          currentMax,
+          'bottomleft',
+          'km²'
+        ).addTo(map);
+        break;
+        
+      case 'buildings':
+        buildingLegend = createLegend(
+          'Greening Potential Score', 
+          currentMin, 
+          currentMax,
+          'bottomleft'
+          // No units for buildings
+        ).addTo(map);
+        break;
+    }
     
   } catch (error) {
     console.error("Error updating legends:", error);
