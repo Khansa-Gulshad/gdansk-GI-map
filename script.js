@@ -296,6 +296,9 @@ map.on('zoomend', function () {
   }
 });
 
+// Load Districts Layer Initially
+districtsLayer.addTo(map); // District layers by default when the map is loaded
+currentLegend.addTo(map); // Add district legend by default
 // Info panel close button
 document.getElementById('close-btn').addEventListener('click', function () {
   document.getElementById('info-panel').style.display = 'none';
