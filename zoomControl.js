@@ -7,11 +7,11 @@ map.on('zoomend', function () {
 
     // Add building layers based on the selected scenario
     if (currentScenario === 1) {
-      loadGeoJSON(scenario1Url, scenario1Layer); // Add building scenario 1 layer
+      loadScenarioLayer(scenario1Url, scenario1Layer);
     } else if (currentScenario === 2) {
-      loadGeoJSON(scenario2Url, scenario2Layer); // Add building scenario 2 layer
+      loadScenarioLayer(scenario2Url, scenario2Layer);
     } else if (currentScenario === 3) {
-      loadGeoJSON(scenario3Url, scenario3Layer); // Add building scenario 3 layer
+      loadScenarioLayer(scenario3Url, scenario3Layer);
     }
 
     // Call updateLegend to switch to the building legend
@@ -29,4 +29,20 @@ map.on('zoomend', function () {
     // Call updateLegend to switch to the district legend
     updateLegend('districts');
   }
+});
+
+// Button event listeners for scenarios (simplified)
+document.getElementById('scenario1-btn').addEventListener('click', () => {
+  currentScenario = 1;
+  updateDistricts(); // Update district colors based on scenario 1
+});
+
+document.getElementById('scenario2-btn').addEventListener('click', () => {
+  currentScenario = 2;
+  updateDistricts(); // Update district colors based on scenario 2
+});
+
+document.getElementById('scenario3-btn').addEventListener('click', () => {
+  currentScenario = 3;
+  updateDistricts(); // Update district colors based on scenario 3
 });
