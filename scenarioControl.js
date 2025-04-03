@@ -1,4 +1,10 @@
 // scenarioControl.js
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+  geojsonLoader.loadInitialLayers()
+    .then(() => updateActiveLayerLegend())
+    .catch(err => console.error("Initial load error:", err));
+});
 
 // Scenario button event listeners
 document.getElementById('scenario1-btn').addEventListener('click', () => {
@@ -35,9 +41,3 @@ function updateActiveLayerLegend() {
   }
 }
 
-// Initial load
-document.addEventListener('DOMContentLoaded', () => {
-  geoJSONLoader.loadInitialLayers()
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Initial load error:", err));
-});
