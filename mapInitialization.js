@@ -33,25 +33,3 @@ const scenarioControl = L.Control.extend({
   }
 });
 map.addControl(new scenarioControl());
-
-// Default selected scenario is 1
-let currentScenario = 1;
-
-// Handling scenario button clicks to change the current scenario
-document.getElementById('scenario1-btn').addEventListener('click', () => {
-  currentScenario = 1;
-  updateDistricts(); // Update district colors based on scenario 1
-  loadScenarioLayer(scenario1Url, scenario1Layer); // Load buildings for scenario 1
-});
-
-document.getElementById('scenario2-btn').addEventListener('click', () => {
-  currentScenario = 2;
-  updateDistricts(); // Update district colors based on scenario 2
-  loadScenarioLayer(scenario2Url, scenario2Layer); // Load buildings for scenario 2
-});
-
-document.getElementById('scenario3-btn').addEventListener('click', () => {
-  currentScenario = 3;
-  updateDistricts(); // Update district colors based on scenario 3
-  loadScenarioLayer(scenario3Url, scenario3Layer); // Load buildings for scenario 3
-});
