@@ -1,29 +1,23 @@
 // scenarioControl.js
-// Initial load
-document.addEventListener('DOMContentLoaded', () => {
-  geojsonLoader.loadInitialLayers()
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Initial load error:", err));
-});
 
 // Scenario button event listeners
 document.getElementById('scenario1-btn').addEventListener('click', () => {
-  currentScenario = 1;
-  updateLayersForScenario(currentScenario)
+  window.currentScenario = 1;
+  geojsonLoader.updateLayersForScenario(window.currentScenario)
     .then(() => updateActiveLayerLegend())
     .catch(err => console.error("Scenario change error:", err));
 });
 
 document.getElementById('scenario2-btn').addEventListener('click', () => {
-  currentScenario = 2;
-  updateLayersForScenario(currentScenario)
+  window.currentScenario = 2;
+  geojsonLoader.updateLayersForScenario(window.currentScenario)
     .then(() => updateActiveLayerLegend())
     .catch(err => console.error("Scenario change error:", err));
 });
 
 document.getElementById('scenario3-btn').addEventListener('click', () => {
-  currentScenario = 3;
-  updateLayersForScenario(currentScenario)
+  window.currentScenario = 3;
+  geojsonLoader.updateLayersForScenario(window.currentScenario)
     .then(() => updateActiveLayerLegend())
     .catch(err => console.error("Scenario change error:", err));
 });
@@ -41,3 +35,9 @@ function updateActiveLayerLegend() {
   }
 }
 
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+  geojsonLoader.loadInitialLayers()
+    .then(() => updateActiveLayerLegend())
+    .catch(err => console.error("Initial load error:", err));
+});
