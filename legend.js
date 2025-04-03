@@ -1,85 +1,101 @@
-// Function to calculate min/max values for color scale
+// Function to safely calculate min/max values for color scale
 function calculateMinMax(data, currentScenario) {
-  // Determine the property name based on the selected scenario
-  const column = `suitable_area_km2_${currentScenario}`; // For districts and grid
-  const allScores = data.features.map(f => parseFloat(f.properties[column])); // Use the correct column based on the scenario
-  const currentMin = Math.min(...allScores);
-  const currentMax = Math.max(...allScores);
-  return { currentMin, currentMax };
+  try {
+    // Determine the property name based on the selected scenario
+    const column = currentScenario <= 3 ? `suitable_area_km2_${currentScenario}` : 'GPS_roof';
+    
+    // Safely extract and parse values, filtering out null/undefined/NaN
+    const allScores = data.features
+      .map(f => {
+        const val = f.properties[column];
+        return val === null || val === undefined ? 0 : parseFloat(val);
+      })
+      .filter(score => !isNaN(score)); // Additional safety check
+
+    // Handle case where all values are null/undefined
+    if (allScores.length === 0) {
+      return { currentMin: 0, currentMax: 1 }; // Default range
+    }
+
+    const currentMin = Math.min(...allScores);
+    const currentMax = Math.max(...allScores);
+    
+    // Handle case where all values are the same
+    if (currentMin === currentMax) {
+      return {
+        currentMin: currentMin > 0 ? 0 : currentMin - 1,
+        currentMax: currentMax + 1
+      };
+    }
+
+    return { currentMin, currentMax };
+  } catch (error) {
+    console.error("Error calculating min/max:", error);
+    return { currentMin: 0, currentMax: 1 }; // Fallback range
+  }
 }
 
-// Function to update the color scale dynamically
-function updateColorScale(data, currentScenario) {
-  const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
-  colorScale.domain([currentMin, currentMax]);
+// Function to generate a single legend (DRY principle - Don't Repeat Yourself)
+function createLegend(title, currentMin, currentMax, position = 'bottomleft') {
+  const legend = L.control({ position });
+  
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'info legend');
+    const steps = 5;
+    
+    // Handle case where min equals max (all values same)
+    const effectiveMin = currentMin;
+    const effectiveMax = currentMax === currentMin ? currentMax + 1 : currentMax;
+    const stepSize = (effectiveMax - effectiveMin) / steps;
+
+    div.innerHTML = `<b>${title}</b><br>`;
+    
+    for (let i = 0; i < steps; i++) {
+      const from = (effectiveMin + i * stepSize).toFixed(2);
+      const to = (effectiveMin + (i + 1) * stepSize).toFixed(2);
+      const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
+      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
+    }
+    
+    return div;
+  };
+  
+  return legend;
 }
 
-// Function to update the legends dynamically
+// Function to update all legends dynamically
 function updateLegends(data, currentScenario) {
-  const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
+  try {
+    const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
 
-  // Remove existing legends before adding new ones
-  if (map.hasControl(districtLegend)) {
-    map.removeControl(districtLegend);
+    // Remove existing legends
+    [districtLegend, buildingLegend, gridLegend].forEach(legend => {
+      if (map.hasControl(legend)) map.removeControl(legend);
+    });
+
+    // Create new legends with appropriate titles
+    districtLegend = createLegend(
+      'Greening Score (Districts)', 
+      currentMin, 
+      currentMax,
+      'bottomleft'
+    ).addTo(map);
+
+    buildingLegend = createLegend(
+      'Greening Score (Buildings)', 
+      currentMin, 
+      currentMax,
+      'bottomleft'
+    ).addTo(map);
+
+    gridLegend = createLegend(
+      'Grid Scores', 
+      currentMin, 
+      currentMax,
+      'bottomleft'
+    ).addTo(map);
+    
+  } catch (error) {
+    console.error("Error updating legends:", error);
   }
-  if (map.hasControl(buildingLegend)) {
-    map.removeControl(buildingLegend);
-  }
-  if (map.hasControl(gridLegend)) {
-    map.removeControl(gridLegend);
-  }
-
-  // Update the district legend
-  districtLegend = L.control({ position: 'bottomleft' });
-  districtLegend.onAdd = function () {
-    const div = L.DomUtil.create('div', 'info legend');
-    const steps = 5;
-    const stepSize = (currentMax - currentMin) / steps;
-
-    div.innerHTML += '<b>Greening Score (Districts)</b><br>';
-    for (let i = 0; i < steps; i++) {
-      const from = (currentMin + i * stepSize).toFixed(2);
-      const to = (currentMin + (i + 1) * stepSize).toFixed(2);
-      const color = getColor((+from + +to) / 2);
-      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
-    }
-    return div;
-  };
-  districtLegend.addTo(map);
-
-  // Update the building legend similarly
-  buildingLegend = L.control({ position: 'bottomleft' });
-  buildingLegend.onAdd = function () {
-    const div = L.DomUtil.create('div', 'info legend');
-    const steps = 5;
-    const stepSize = (currentMax - currentMin) / steps;
-
-    div.innerHTML += '<b>Greening Score (Buildings)</b><br>';
-    for (let i = 0; i < steps; i++) {
-      const from = (currentMin + i * stepSize).toFixed(2);
-      const to = (currentMin + (i + 1) * stepSize).toFixed(2);
-      const color = getColor((+from + +to) / 2);
-      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
-    }
-    return div;
-  };
-  buildingLegend.addTo(map);
-
-  // Update the grid legend
-  gridLegend = L.control({ position: 'bottomleft' });
-  gridLegend.onAdd = function () {
-    const div = L.DomUtil.create('div', 'info legend');
-    const steps = 5;
-    const stepSize = (currentMax - currentMin) / steps;
-
-    div.innerHTML += '<b>Grid Scores</b><br>';
-    for (let i = 0; i < steps; i++) {
-      const from = (currentMin + i * stepSize).toFixed(2);
-      const to = (currentMin + (i + 1) * stepSize).toFixed(2);
-      const color = getColor((+from + +to) / 2);
-      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}<br>`;
-    }
-    return div;
-  };
-  gridLegend.addTo(map);
 }
