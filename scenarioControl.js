@@ -1,25 +1,27 @@
-// scenarioControl.js
-
-let currentScenario = 1;  // Default scenario is 1
-
 // Scenario button event listeners
 document.getElementById('scenario1-btn').addEventListener('click', () => {
   currentScenario = 1;
-  updateDistricts();  // Update districts with scenario 1
-  updateGrid();       // Update grid with scenario 1
-  updateBuildings();  // Update buildings with scenario 1
+  updateActiveLayerLegend();  // Add this new function call
 });
 
 document.getElementById('scenario2-btn').addEventListener('click', () => {
   currentScenario = 2;
-  updateDistricts();  // Update districts with scenario 2
-  updateGrid();       // Update grid with scenario 2
-  updateBuildings();  // Update buildings with scenario 2
+  updateActiveLayerLegend();  // Add this new function call
 });
 
 document.getElementById('scenario3-btn').addEventListener('click', () => {
   currentScenario = 3;
-  updateDistricts();  // Update districts with scenario 3
-  updateGrid();       // Update grid with scenario 3
-  updateBuildings();  // Update buildings with scenario 3
+  updateActiveLayerLegend();  // Add this new function call
 });
+
+// Add this new helper function to the same file
+function updateActiveLayerLegend() {
+  const currentZoom = map.getZoom();
+  
+  if (currentZoom > 12) {
+    updateLegends(buildingsData, currentScenario, 'buildings');
+  } else if (currentZoom > 10) {
+    updateLegends(gridData, currentScenario, 'grid');
+  } else {
+    updateLegends(districtsData, currentScenario, 'districts');
+  }
