@@ -1,56 +1,41 @@
 // scenarioControl.js
 
-// Scenario button event listeners
+// Scenario button event listeners - SIMPLE VERSION THAT WORKS
 document.getElementById('scenario1-btn').addEventListener('click', () => {
   currentScenario = 1;
-  updateLayersForScenario(currentScenario)
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Scenario change error:", err));
+  updateLayersForScenario(currentScenario);
+  updateActiveLayerLegend();
 });
 
 document.getElementById('scenario2-btn').addEventListener('click', () => {
   currentScenario = 2;
-  updateLayersForScenario(currentScenario)
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Scenario change error:", err));
+  updateLayersForScenario(currentScenario);
+  updateActiveLayerLegend();
 });
 
 document.getElementById('scenario3-btn').addEventListener('click', () => {
   currentScenario = 3;
-  updateLayersForScenario(currentScenario)
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Scenario change error:", err));
+  updateLayersForScenario(currentScenario);
+  updateActiveLayerLegend();
 });
 
-// Helper function to update legend for currently active layer
+// Helper function to update legend for active layer
 function updateActiveLayerLegend() {
   const currentZoom = map.getZoom();
   
   if (currentZoom > 12) {
-    // Buildings layer active
-    if (buildingsData) {
-      updateLegends(buildingsData, currentScenario, 'buildings');
-    } else {
-      console.warn("Buildings data not loaded yet");
-    }
+    // Buildings layer
+    updateLegends(buildingsData, currentScenario, 'buildings');
   } else if (currentZoom > 10) {
-    // Grid layer active
-    if (gridData) {
-      updateLegends(gridData, currentScenario, 'grid');
-    } else {
-      console.warn("Grid data not loaded yet");
-    }
+    // Grid layer
+    updateLegends(gridData, currentScenario, 'grid');
   } else {
-    // Districts layer active
-    if (districtsData) {
-      updateLegends(districtsData, currentScenario, 'districts');
-    } else {
-      console.warn("Districts data not loaded yet");
-    }
+    // Districts layer
+    updateLegends(districtsData, currentScenario, 'districts');
   }
 }
 
-// Initial legend update after all layers load (add this to your initialization)
-loadInitialLayers()
-  .then(() => updateActiveLayerLegend())
-  .catch(err => console.error("Initial load error:", err));
+// Initial legend update (call this after layers load)
+function initializeLegends() {
+  updateActiveLayerLegend();
+}
