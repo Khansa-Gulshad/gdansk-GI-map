@@ -1,48 +1,43 @@
-// Zoom event handling to switch between districts and buildings
+// Zoom-based toggling: Control visibility of the layers
 map.on('zoomend', function () {
-  if (map.getZoom() > 12) { // Zoomed in, show building layers
+  const currentZoom = map.getZoom();
+
+  if (currentZoom > 12) {
+    // Zoomed in, show the building layers
+    if (!map.hasLayer(scenario1Layer)) {
+      loadScenarioLayer(scenario1Url, scenario1Layer); // Load scenario 1 when zoomed in
+    }
+    if (!map.hasLayer(scenario2Layer)) {
+      loadScenarioLayer(scenario2Url, scenario2Layer); // Load scenario 2 when zoomed in
+    }
+    if (!map.hasLayer(scenario3Layer)) {
+      loadScenarioLayer(scenario3Url, scenario3Layer); // Load scenario 3 when zoomed in
+    }
+    // Hide the district and grid layers at higher zoom levels
     if (map.hasLayer(districtsLayer)) {
-      districtsLayer.remove(); // Remove district layer if zoomed in
+      districtsLayer.remove();
     }
-
-    // Add building layers based on the selected scenario
-    if (currentScenario === 1) {
-      loadScenarioLayer(scenario1Url, scenario1Layer);
-    } else if (currentScenario === 2) {
-      loadScenarioLayer(scenario2Url, scenario2Layer);
-    } else if (currentScenario === 3) {
-      loadScenarioLayer(scenario3Url, scenario3Layer);
+    if (map.hasLayer(gridLayer)) {
+      gridLayer.remove();
     }
-
-    // Call updateLegend to switch to the building legend
-    updateLegend('buildings');
-  } else { // Zoomed out, show district layers
+  } else {
+    // Zoomed out, show the district and grid layers
     if (!map.hasLayer(districtsLayer)) {
-      districtsLayer.addTo(map); // Add district layer when zoomed out
+      districtsLayer.addTo(map); // Show district layer at lower zoom levels
+    }
+    if (!map.hasLayer(gridLayer)) {
+      gridLayer.addTo(map); // Show grid layer at lower zoom levels
     }
 
     // Remove building layers when zoomed out
-    map.removeLayer(scenario1Layer);
-    map.removeLayer(scenario2Layer);
-    map.removeLayer(scenario3Layer);
-
-    // Call updateLegend to switch to the district legend
-    updateLegend('districts');
+    if (map.hasLayer(scenario1Layer)) {
+      scenario1Layer.remove();
+    }
+    if (map.hasLayer(scenario2Layer)) {
+      scenario2Layer.remove();
+    }
+    if (map.hasLayer(scenario3Layer)) {
+      scenario3Layer.remove();
+    }
   }
-});
-
-// Button event listeners for scenarios (simplified)
-document.getElementById('scenario1-btn').addEventListener('click', () => {
-  currentScenario = 1;
-  updateDistricts(); // Update district colors based on scenario 1
-});
-
-document.getElementById('scenario2-btn').addEventListener('click', () => {
-  currentScenario = 2;
-  updateDistricts(); // Update district colors based on scenario 2
-});
-
-document.getElementById('scenario3-btn').addEventListener('click', () => {
-  currentScenario = 3;
-  updateDistricts(); // Update district colors based on scenario 3
 });
