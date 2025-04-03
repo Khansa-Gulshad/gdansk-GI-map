@@ -1,5 +1,17 @@
 // scenarioControl.js
+// Wait for DOM and dependencies to load
+document.addEventListener('DOMContentLoaded', function() {
+  // Verify the loader is available
+  if (!window.geoJSONLoader) {
+    console.error("geoJSONLoader not found!");
+    return;
+  }
 
+  // Initial load
+  window.geoJSONLoader.loadInitialLayers()
+    .then(() => updateActiveLayerLegend())
+    .catch(err => console.error("Initial load error:", err));
+  
 // Scenario button event listeners
 document.getElementById('scenario1-btn').addEventListener('click', () => {
   window.currentScenario = 1;
@@ -24,7 +36,7 @@ document.getElementById('scenario3-btn').addEventListener('click', () => {
 
 // Helper function to update legend for currently active layer
 function updateActiveLayerLegend() {
-  const currentZoom = map.getZoom();
+  const currentZoom = map?.getZoom() || 0;
   
   if (currentZoom > 12 && window.buildingsData) {
     updateLegends(window.buildingsData, window.currentScenario, 'buildings');
@@ -34,10 +46,3 @@ function updateActiveLayerLegend() {
     updateLegends(window.districtsData, window.currentScenario, 'districts');
   }
 }
-
-// Initial load
-document.addEventListener('DOMContentLoaded', () => {
-  geojsonLoader.loadInitialLayers()
-    .then(() => updateActiveLayerLegend())
-    .catch(err => console.error("Initial load error:", err));
-});
