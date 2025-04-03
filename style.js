@@ -11,7 +11,7 @@ function updateColorScale(data) {
 
 // Styling function for districts layer
 function styleDistricts(feature) {
-  const score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]); // Use the selected scenario's area
+  const score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]);
   return {
     fillColor: getColor(score),
     weight: 1,
@@ -19,8 +19,9 @@ function styleDistricts(feature) {
     fillOpacity: 0.7
   };
 }
-// Styling function for buildings
-function style(feature) {
+
+// Styling function for building layers
+function styleBuildings(feature) {
   const score = parseFloat(feature.properties.GPS_roof);
   return {
     fillColor: getColor(score),
