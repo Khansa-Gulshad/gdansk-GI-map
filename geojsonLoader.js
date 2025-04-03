@@ -12,8 +12,6 @@ let scenario1Layer = L.layerGroup();
 let scenario2Layer = L.layerGroup();
 let scenario3Layer = L.layerGroup();
 
-// Store loaded GeoJSON data globally
-let districtsData, gridData, buildingsData;
 
 // Function to load and add a GeoJSON layer
 function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc, isBuildingLayer = false) {
