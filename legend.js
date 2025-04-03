@@ -1,26 +1,27 @@
-// Function to safely calculate min/max values for color scale
+// legend.js
+
+// Declare legend variables at the top
+let districtLegend, gridLegend, buildingLegend;
+
+// Keep your existing calculateMinMax function exactly as is
 function calculateMinMax(data, currentScenario) {
   try {
-    // Determine the property name based on the selected scenario
     const column = currentScenario <= 3 ? `suitable_area_km2_${currentScenario}` : 'GPS_roof';
     
-    // Safely extract and parse values, filtering out null/undefined/NaN
     const allScores = data.features
       .map(f => {
         const val = f.properties[column];
         return val === null || val === undefined ? 0 : parseFloat(val);
       })
-      .filter(score => !isNaN(score)); // Additional safety check
+      .filter(score => !isNaN(score));
 
-    // Handle case where all values are null/undefined
     if (allScores.length === 0) {
-      return { currentMin: 0, currentMax: 1 }; // Default range
+      return { currentMin: 0, currentMax: 1 };
     }
 
     const currentMin = Math.min(...allScores);
     const currentMax = Math.max(...allScores);
     
-    // Handle case where all values are the same
     if (currentMin === currentMax) {
       return {
         currentMin: currentMin > 0 ? 0 : currentMin - 1,
@@ -31,48 +32,21 @@ function calculateMinMax(data, currentScenario) {
     return { currentMin, currentMax };
   } catch (error) {
     console.error("Error calculating min/max:", error);
-    return { currentMin: 0, currentMax: 1 }; // Fallback range
+    return { currentMin: 0, currentMax: 1 };
   }
 }
 
-// Modified createLegend function to support units
-function createLegend(title, currentMin, currentMax, position = 'bottomleft', unit = '') {
-  const legend = L.control({ position });
-  
-  legend.onAdd = function() {
-    const div = L.DomUtil.create('div', 'info legend');
-    const steps = 5;
-    const effectiveMax = currentMax === currentMin ? currentMax + 1 : currentMax;
-    const stepSize = (effectiveMax - currentMin) / steps;
-
-    // Add unit to title if provided
-    const titleWithUnit = unit ? `${title} (${unit})` : title;
-    div.innerHTML = `<b>${titleWithUnit}</b><br>`;
-    
-    for (let i = 0; i < steps; i++) {
-      const from = (currentMin + i * stepSize).toFixed(2);
-      const to = (currentMin + (i + 1) * stepSize).toFixed(2);
-      const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
-      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}${unit ? ' ' + unit : ''}<br>`;
-    }
-    
-    return div;
-  };
-  
-  return legend;
-}
-
-// Modified updateLegends to handle active layer
+// Modified to use the declared legend variables
 function updateLegends(data, currentScenario, activeLayer) {
   try {
     const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
 
-    // Remove existing legends
-    [districtLegend, buildingLegend, gridLegend].forEach(legend => {
-      if (map.hasControl(legend)) map.removeControl(legend);
+    // Remove existing legends using the declared variables
+    [districtLegend, gridLegend, buildingLegend].forEach(legend => {
+      if (legend && map.hasControl(legend)) map.removeControl(legend);
     });
 
-    // Only create legend for active layer
+    // Create appropriate legend
     switch(activeLayer) {
       case 'districts':
         districtLegend = createLegend(
@@ -100,7 +74,6 @@ function updateLegends(data, currentScenario, activeLayer) {
           currentMin, 
           currentMax,
           'bottomleft'
-          // No units for buildings
         ).addTo(map);
         break;
     }
@@ -108,4 +81,30 @@ function updateLegends(data, currentScenario, activeLayer) {
   } catch (error) {
     console.error("Error updating legends:", error);
   }
+}
+
+// Keep your existing createLegend function
+function createLegend(title, currentMin, currentMax, position = 'bottomleft', unit = '') {
+  const legend = L.control({ position });
+  
+  legend.onAdd = function() {
+    const div = L.DomUtil.create('div', 'info legend');
+    const steps = 5;
+    const effectiveMax = currentMax === currentMin ? currentMax + 1 : currentMax;
+    const stepSize = (effectiveMax - currentMin) / steps;
+
+    const titleWithUnit = unit ? `${title} (${unit})` : title;
+    div.innerHTML = `<b>${titleWithUnit}</b><br>`;
+    
+    for (let i = 0; i < steps; i++) {
+      const from = (currentMin + i * stepSize).toFixed(2);
+      const to = (currentMin + (i + 1) * stepSize).toFixed(2);
+      const color = getColor((parseFloat(from) + parseFloat(to)) / 2);
+      div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}${unit ? ' ' + unit : ''}<br>`;
+    }
+    
+    return div;
+  };
+  
+  return legend;
 }
