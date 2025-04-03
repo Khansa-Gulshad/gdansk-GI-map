@@ -14,8 +14,9 @@ let scenario3Layer = L.layerGroup();
 fetch(districtsUrl)
   .then(response => response.json())
   .then(data => {
+    updateColorScale(data); // Update color scale with loaded data
     L.geoJSON(data, {
-      style: styleDistricts,
+      style: styleDistricts, // Apply updated style
       onEachFeature: onEachDistrictFeature
     }).addTo(districtsLayer);
   })
@@ -29,8 +30,9 @@ function loadScenarioLayer(url, layerGroup) {
   fetch(url)
     .then(response => response.json())
     .then(data => {
+      updateColorScale(data); // Update color scale with loaded building data
       L.geoJSON(data, {
-        style: styleBuildings,
+        style: styleBuildings, // Apply updated style
         onEachFeature: onEachBuildingFeature
       }).addTo(layerGroup);
     })
