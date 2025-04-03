@@ -1,4 +1,4 @@
-/ Create base color scale
+// Create base color scale
 let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
 
 // Function to get the color corresponding to a value
