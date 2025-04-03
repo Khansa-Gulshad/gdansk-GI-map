@@ -27,12 +27,15 @@ const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Create base color scale
 let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
-let currentScenario = 1; // Default scenario (Scenario 1)
 
-// Score-based color
-function getColor(score) {
-  return colorScale(score).hex();
+function updateColorScale(data) {
+  const allScores = data.features.map(f => parseFloat(f.properties.GPS_roof));
+  const minScore = Math.min(...allScores);
+  const maxScore = Math.max(...allScores);
+
+  colorScale.domain([minScore, maxScore]);
 }
+
 // Styling function for districts layer
 function styleDistricts(feature) {
   const score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]); // Use the selected scenario's area
@@ -45,18 +48,17 @@ function styleDistricts(feature) {
 }
 
 // Popups for districts showing the area for each scenario
-function onEachDistrict(feature, layer) {
+function onEachDistrictFeature(feature, layer) {
   const districtName = feature.properties.District;
-  
-  // Display area based on the current scenario
-  const area = feature.properties[`suitable_area_km2_${currentScenario}`] !== null ? feature.properties[`suitable_area_km2_${currentScenario}`].toFixed(2) : '0.00';
+  const area = feature.properties[`suitable_area_km2_${currentScenario}`] !== null 
+    ? feature.properties[`suitable_area_km2_${currentScenario}`].toFixed(2) 
+    : '0.00';
 
   layer.bindPopup(
     `<b>District:</b> ${districtName}<br>` +
     `<b>Green Roof Area (Scenario ${currentScenario}):</b> ${area} km²`
   );
 }
-
 // Create Layer Group for Districts
 const districtsLayer = L.layerGroup();
 
@@ -86,7 +88,7 @@ function style(feature) {
 }
 
 // Popups
-function onEachFeature(feature, layer) {
+function onEachBuildingFeature(feature, layer) {
   if (feature.properties) {
     layer.bindPopup(
       `<b>Greening Potential Score:</b> ${(+feature.properties.GPS_roof).toFixed(2)}<br>` +
@@ -255,6 +257,24 @@ function updateDistricts() {
     .catch(err => console.error('Error loading Districts GeoJSON:', err));
 }
 
+function updateLegend(layerType) {
+  let newLegend;
+  
+  // Determine which legend to show based on layerType
+  if (layerType === 'districts') {
+    newLegend = districtLegend;
+  } else if (layerType === 'buildings') {
+    newLegend = buildingLegend;
+  }
+
+  // Only update if the current legend is different
+  if (currentLegend !== newLegend) {
+    map.removeControl(currentLegend);  // Remove the current legend
+    currentLegend = newLegend;         // Update the current legend reference
+    currentLegend.addTo(map);          // Add the new legend
+  }
+}
+
 // Add Zoom Event to switch layers dynamically
 map.on('zoomend', function () {
   if (map.getZoom() > 12) { // Zoomed in, show building layers
@@ -271,12 +291,8 @@ map.on('zoomend', function () {
       loadGeoJSON(scenario3Url, scenario3Layer); // Add building scenario 3 layer
     }
 
-    // Remove the district legend and show building legend
-    if (currentLegend !== buildingLegend) {
-      map.removeControl(currentLegend);
-      currentLegend = buildingLegend;
-      currentLegend.addTo(map);
-    }
+    // Call updateLegend to switch to building legend
+    updateLegend('buildings');
   } else { // Zoomed out, show district layers
     if (!map.hasLayer(districtsLayer)) {
       districtsLayer.addTo(map); // Add district layer when zoomed out
@@ -287,18 +303,11 @@ map.on('zoomend', function () {
     map.removeLayer(scenario2Layer);
     map.removeLayer(scenario3Layer);
 
-    // Remove the building legend and show district legend
-    if (currentLegend !== districtLegend) {
-      map.removeControl(currentLegend);
-      currentLegend = districtLegend;
-      currentLegend.addTo(map);
-    }
+    // Call updateLegend to switch to district legend
+    updateLegend('districts');
   }
 });
 
-// Load Districts Layer Initially
-districtsLayer.addTo(map); // District layers by default when the map is loaded
-currentLegend.addTo(map); // Add district legend by default
 // Info panel close button
 document.getElementById('close-btn').addEventListener('click', function () {
   document.getElementById('info-panel').style.display = 'none';
