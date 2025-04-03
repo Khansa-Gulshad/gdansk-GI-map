@@ -9,65 +9,62 @@ function getColor(value) {
   return colorScale(value).hex();  // Return the color corresponding to the value
 }
 
-// Function to update the color scale based on GeoJSON data
 function updateColorScale(data, currentScenario) {
-  let allScores;
+  let allScores = [];
 
   if (currentScenario <= 3) {
-    allScores = data.features.map(f => parseFloat(f.properties[`suitable_area_km2_${currentScenario}`])); // For districts and grid
+    const prop = `suitable_area_km2_${currentScenario}`;
+    allScores = data.features
+      .map(f => safeParse(f.properties[prop]));
   } else {
-    allScores = data.features.map(f => parseFloat(f.properties.GPS_roof)); // For buildings
+    allScores = data.features
+      .map(f => safeParse(f.properties.GPS_roof));
+  }
+
+  // Filter out any remaining NaN values just in case
+  allScores = allScores.filter(score => !isNaN(score));
+
+  // Set default domain if no valid scores
+  if (allScores.length === 0) {
+    colorScale.domain([0, 1]);
+    return;
   }
 
   const minScore = Math.min(...allScores);
   const maxScore = Math.max(...allScores);
-  colorScale.domain([minScore, maxScore]);  // Update color scale domain
+  colorScale.domain([minScore, maxScore]);
 }
 
-// Styling function for districts layer (based on scenario)
+// Helper function to safely parse values, treating null/undefined as 0
+function safeParse(value) {
+  return value === null || value === undefined || isNaN(value) ? 0 : parseFloat(value);
+}
+
+// Updated style functions
 function styleDistricts(feature) {
-  let score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]);
-
-  // If score is null or invalid, set it to 0
-  if (isNaN(score) || score === null) {
-    score = 0;  // Default to 0 if invalid
-  }
-
+  const score = safeParse(feature.properties[`suitable_area_km2_${currentScenario}`]);
   return {
-    fillColor: getColor(score),  // Use the updated color scale
+    fillColor: getColor(score),
     weight: 1,
     color: 'transparent',
     fillOpacity: 0.7
   };
 }
 
-// Styling function for grid layer (similar to districts, based on scenario)
 function styleGrid(feature) {
-  let score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]);
-
-  // If score is null or invalid, set it to 0
-  if (isNaN(score) || score === null) {
-    score = 0;  // Default to 0 if invalid
-  }
-
+  const score = safeParse(feature.properties[`suitable_area_km2_${currentScenario}`]);
   return {
-    fillColor: getColor(score),  // Use the updated color scale
+    fillColor: getColor(score),
     weight: 1,
     color: 'transparent',
     fillOpacity: 0.6
   };
 }
-// Styling function for buildings layers (using GPS_roof for all scenarios)
+
 function styleBuildings(feature) {
-  let score = parseFloat(feature.properties.GPS_roof);
-
-  // If score is null or invalid, set it to 0
-  if (isNaN(score) || score === null) {
-    score = 0;  // Default to 0 if invalid
-  }
-
+  const score = safeParse(feature.properties.GPS_roof);
   return {
-    fillColor: getColor(score),  // Use the updated color scale
+    fillColor: getColor(score),
     weight: 0,
     color: 'transparent',
     fillOpacity: 0.9
