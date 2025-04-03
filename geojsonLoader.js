@@ -105,7 +105,7 @@ loadInitialLayers().catch(err => {
 });
 
 // At the bottom, expose only the necessary functions
-window.geoJSONLoader = {
+window.geojsonLoader = {  // <-- all lowercase to match filename
   updateLayersForScenario,
   loadInitialLayers
 };
