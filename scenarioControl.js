@@ -1,3 +1,7 @@
+// scenarioControl.js
+
+let currentScenario = 1;  // Default scenario is 1
+
 // Scenario button event listeners
 document.getElementById('scenario1-btn').addEventListener('click', () => {
   currentScenario = 1;
