@@ -1,8 +1,11 @@
 // Create base color scale
 let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
 
-// Function to get the color corresponding to a value
 function getColor(value) {
+  // If value is null, NaN or invalid, return 0 as a fallback value
+  if (value === null || isNaN(value)) {
+    value = 0;  // Default to 0
+  }
   return colorScale(value).hex();  // Return the color corresponding to the value
 }
 
@@ -23,9 +26,15 @@ function updateColorScale(data, currentScenario) {
 
 // Styling function for districts layer (based on scenario)
 function styleDistricts(feature) {
-  const score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]); // Use the appropriate column based on the scenario
+  let score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]);
+
+  // If score is null or invalid, set it to 0
+  if (isNaN(score) || score === null) {
+    score = 0;  // Default to 0 if invalid
+  }
+
   return {
-    fillColor: getColor(score),
+    fillColor: getColor(score),  // Use the updated color scale
     weight: 1,
     color: 'transparent',
     fillOpacity: 0.7
@@ -34,20 +43,31 @@ function styleDistricts(feature) {
 
 // Styling function for grid layer (similar to districts, based on scenario)
 function styleGrid(feature) {
-  const score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]); // Use the appropriate column for grid based on the scenario
+  let score = parseFloat(feature.properties[`suitable_area_km2_${currentScenario}`]);
+
+  // If score is null or invalid, set it to 0
+  if (isNaN(score) || score === null) {
+    score = 0;  // Default to 0 if invalid
+  }
+
   return {
-    fillColor: getColor(score),
+    fillColor: getColor(score),  // Use the updated color scale
     weight: 1,
     color: 'transparent',
     fillOpacity: 0.6
   };
 }
-
 // Styling function for buildings layers (using GPS_roof for all scenarios)
 function styleBuildings(feature) {
-  const score = parseFloat(feature.properties.GPS_roof); // All building scenarios use the GPS_roof column
+  let score = parseFloat(feature.properties.GPS_roof);
+
+  // If score is null or invalid, set it to 0
+  if (isNaN(score) || score === null) {
+    score = 0;  // Default to 0 if invalid
+  }
+
   return {
-    fillColor: getColor(score),
+    fillColor: getColor(score),  // Use the updated color scale
     weight: 0,
     color: 'transparent',
     fillOpacity: 0.9
