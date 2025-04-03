@@ -18,3 +18,28 @@ L.control.scale({
   metric: true,     // Use metric system (kilometers, meters)
   position: 'bottomright' // Change position to bottom-right
 }).addTo(map);
+
+// Add scale control with custom options
+L.control.scale({
+  imperial: false,  // Disable feet
+  metric: true,     // Use metric system (kilometers, meters)
+  position: 'bottomright' // Change position to bottom-right
+}).addTo(map);
+
+// Add scenario control buttons to switch between scenarios
+const scenarioControl = L.Control.extend({
+  options: { position: 'topleft' },
+  onAdd: function () {
+    const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+    container.innerHTML = `
+      <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
+      <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
+      <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
+    `;
+    return container;
+  }
+});
+map.addControl(new scenarioControl());
+
+// Default selected scenario is 1
+let currentScenario = 1;
