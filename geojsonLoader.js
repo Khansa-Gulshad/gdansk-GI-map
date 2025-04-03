@@ -1,5 +1,5 @@
 // GeoJSON URLs
-const districtsUrl = 'combined_gdansk_districts_roof.geojson'; // Replace with your districts GeoJSON URL
+const districtsUrl = 'combined_gdansk_districts_roof.geojson';
 const scenario1Url = 'filtered_buildings_scenario1.geojson';
 const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
@@ -19,7 +19,7 @@ fetch(districtsUrl)
       style: styleDistricts, // Apply updated style
       onEachFeature: onEachDistrictFeature
     }).addTo(districtsLayer);
-    updateLegends(data); // Update the legends based on the data
+    updateLegends(data); // Call the updateLegends function from legend.js
   })
   .catch(err => console.error('Error loading Districts GeoJSON:', err));
 
@@ -36,8 +36,7 @@ function loadScenarioLayer(url, layerGroup) {
         style: styleBuildings, // Apply updated style
         onEachFeature: onEachBuildingFeature
       }).addTo(layerGroup);
-      updateLegends(data); // Update the legends based on the data
+      updateLegends(data); // Call the updateLegends function from legend.js
     })
     .catch(err => console.error(`Error loading GeoJSON for scenario: ${url}`, err));
 }
-
