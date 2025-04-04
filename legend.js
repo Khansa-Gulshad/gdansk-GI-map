@@ -1,7 +1,9 @@
 // legend.js
 
-// Declare legend variables at the top
-let districtLegend, gridLegend, buildingLegend;
+// Use window references for all shared variables
+window.districtLegend = null;
+window.gridLegend = null;
+window.buildingLegend = null;
 
 // Keep your existing calculateMinMax function exactly as is
 function calculateMinMax(data, currentScenario) {
@@ -36,45 +38,50 @@ function calculateMinMax(data, currentScenario) {
   }
 }
 
-// Modified to use the declared legend variables
+// Modified to use window.map and window legend references
 function updateLegends(data, currentScenario, activeLayer) {
   try {
     const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
 
-    // Remove existing legends using the declared variables
-    [districtLegend, gridLegend, buildingLegend].forEach(legend => {
-      if (legend && map.hasControl(legend)) map.removeControl(legend);
+    // Remove existing legends using window references
+    [window.districtLegend, window.gridLegend, window.buildingLegend].forEach(legend => {
+      if (legend && window.map && window.map.hasControl(legend)) {
+        window.map.removeControl(legend);
+      }
     });
 
     // Create appropriate legend
     switch(activeLayer) {
       case 'districts':
-        districtLegend = createLegend(
+        window.districtLegend = createLegend(
           'Suitable Area - Districts', 
           currentMin, 
           currentMax,
           'bottomleft',
           'km²'
-        ).addTo(map);
+        );
+        window.districtLegend.addTo(window.map);
         break;
         
       case 'grid':
-        gridLegend = createLegend(
+        window.gridLegend = createLegend(
           'Suitable Area - Grid', 
           currentMin, 
           currentMax,
           'bottomleft',
           'km²'
-        ).addTo(map);
+        );
+        window.gridLegend.addTo(window.map);
         break;
         
       case 'buildings':
-        buildingLegend = createLegend(
+        window.buildingLegend = createLegend(
           'Greening Potential Score', 
           currentMin, 
           currentMax,
           'bottomleft'
-        ).addTo(map);
+        );
+        window.buildingLegend.addTo(window.map);
         break;
     }
     
