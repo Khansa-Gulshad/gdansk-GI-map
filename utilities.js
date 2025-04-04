@@ -11,4 +11,5 @@ window.currentScenario = 1;
 window.districtLegend = null;
 window.gridLegend = null;
 window.buildingLegend = null;
-window.map = null; // Add this line to store map reference
+window.map = null; // Will be set by mapInitialization.js
+window.legends = {}; // Will be used by legend.js // Add this line to store map reference
