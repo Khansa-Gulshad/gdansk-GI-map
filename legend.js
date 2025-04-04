@@ -39,50 +39,62 @@ function calculateMinMax(data, currentScenario) {
 }
 
 // Modified to use window.map and window legend references
+// Fixed legend update function
 function updateLegends(data, currentScenario, activeLayer) {
   try {
     const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
 
-    // Remove existing legends using window references
-    [window.districtLegend, window.gridLegend, window.buildingLegend].forEach(legend => {
-      if (legend && window.map && window.map.hasControl(legend)) {
-        window.map.removeControl(legend);
-      }
-    });
+    // Determine which legend we're working with
+    const legendType = activeLayer === 'districts' ? 'district' :
+                      activeLayer === 'grid' ? 'grid' : 'building';
 
-    // Create appropriate legend
-    switch(activeLayer) {
-      case 'districts':
-        window.districtLegend = createLegend(
-          'Suitable Area - Districts', 
-          currentMin, 
-          currentMax,
-          'bottomleft',
-          'km²'
-        );
-        window.districtLegend.addTo(window.map);
-        break;
-        
-      case 'grid':
-        window.gridLegend = createLegend(
-          'Suitable Area - Grid', 
-          currentMin, 
-          currentMax,
-          'bottomleft',
-          'km²'
-        );
-        window.gridLegend.addTo(window.map);
-        break;
-        
-      case 'buildings':
-        window.buildingLegend = createLegend(
-          'Greening Potential Score', 
-          currentMin, 
-          currentMax,
-          'bottomleft'
-        );
-        window.buildingLegend.addTo(window.map);
-        break;
+    // Remove existing legend if it exists
+    if (window.legends[legendType] && window.map) {
+      window.map.removeControl(window.legends[legendType]);
+      window.legends[legendType] = null;
+    }
+
+    // Create new legend
+    const legend = L.control({ position: 'bottomleft' });
+    
+    legend.onAdd = function() {
+      const div = L.DomUtil.create('div', 'info legend');
+      const steps = 5;
+      const stepSize = (currentMax - currentMin) / steps;
+
+      // Configure title and units
+      let title, unit;
+      switch(activeLayer) {
+        case 'districts':
+          title = 'Suitable Area (Districts)';
+          unit = 'km²';
+          break;
+        case 'grid':
+          title = 'Suitable Area (Grid)';
+          unit = 'km²';
+          break;
+        case 'buildings':
+          title = 'Greening Potential Score';
+          unit = '';
+          break;
+      }
+
+      div.innerHTML = `<b>${title}</b><br>`;
+      
+      for (let i = 0; i < steps; i++) {
+        const from = (currentMin + i * stepSize).toFixed(2);
+        const to = (currentMin + (i + 1) * stepSize).toFixed(2);
+        const color = getColor((+from + +to) / 2);
+        div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}${unit ? ' ' + unit : ''}<br>`;
+      }
+      
+      return div;
+    };
+
+    // Add to map and store reference
+    if (window.map) {
+      legend.addTo(window.map);
+      window.legends[legendType] = legend;
     }
     
   } catch (error) {
