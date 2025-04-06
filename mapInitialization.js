@@ -30,7 +30,7 @@ closeBtn.addEventListener('click', function() {
   // Initial map resize
   setTimeout(function() {
     window.map.invalidateSize();
-  }, 300);
+  }, 100);
 
 
 
