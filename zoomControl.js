@@ -3,8 +3,7 @@ window.map.on('zoomend', function () {
   const currentZoom = window.map.getZoom();
 
   if (currentZoom > 12) {
-    // Zoomed in — show buildings
-
+    // Zoomed in — show building layers
     let layerToAdd = null;
     let urlToLoad = null;
 
@@ -28,7 +27,7 @@ window.map.on('zoomend', function () {
       });
     }
 
-    // Hide district and grid layers
+    // Remove district and grid layers if they are present
     if (window.districtsLayer && window.map.hasLayer(window.districtsLayer)) {
       window.map.removeLayer(window.districtsLayer);
     }
@@ -40,6 +39,7 @@ window.map.on('zoomend', function () {
     // Zoomed out — show grid or districts
     const showGrid = currentZoom > 10;
 
+    // Show grid layer if zoomed out enough
     if (showGrid) {
       if (window.gridLayer && !window.map.hasLayer(window.gridLayer)) {
         window.gridLayer.addTo(window.map);
@@ -62,7 +62,7 @@ window.map.on('zoomend', function () {
       }
     }
 
-    // Remove all building layers safely
+    // Remove all building layers safely when zoomed out
     [scenario1Layer, scenario2Layer, scenario3Layer].forEach(layer => {
       if (layer && window.map.hasLayer(layer)) {
         window.map.removeLayer(layer);
