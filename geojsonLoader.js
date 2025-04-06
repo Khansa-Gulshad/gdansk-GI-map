@@ -37,24 +37,42 @@ function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc, isBuildingLay
     });
 }
 
-// Function to load the Districts layer
 function loadDistrictsLayer() {
-  return loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature)
+  return fetch(districtsUrl)
+    .then(response => response.json())
     .then(data => {
+      districtsData = data;
+      updateColorScale(data, currentScenario);
+
+      // Create and store GeoJSON layer
+      districtsLayer = L.geoJSON(data, {
+        style: styleDistricts,
+        onEachFeature: onEachDistrictFeature
+      });
+
+      districtsLayer.addTo(window.map); // Add to map here or conditionally
       updateLegends(data, currentScenario, 'districts');
       return data;
     });
 }
 
-// Function to load the Grid layer
 function loadGridLayer() {
-  return loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature)
+  return fetch(gridUrl)
+    .then(response => response.json())
     .then(data => {
+      gridData = data;
+      updateColorScale(data, currentScenario);
+
+      gridLayer = L.geoJSON(data, {
+        style: styleGrid,
+        onEachFeature: onEachGridFeature
+      });
+
+      gridLayer.addTo(window.map);
       updateLegends(data, currentScenario, 'grid');
       return data;
     });
 }
-
 // Function to load building scenario layers
 function loadScenarioLayer(url, layerGroup) {
   return loadGeoJSONLayer(url, layerGroup, styleBuildings, onEachBuildingFeature, true)
