@@ -1,43 +1,68 @@
 // mapInitialization.js
-window.map = L.map('map').setView([54.352, 18.6466], 13);
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize the map
+  window.map = L.map('map').setView([54.352, 18.6466], 13);
+  
+  // Add tile layer
+  const mapboxLayer = L.tileLayer(
+    'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
+    {
+      tileSize: 512,
+      zoomOffset: -1,
+      attribution: '© <a href="https://www.mapbox.com/">Mapbox</a>'
+    }
+  );
+  mapboxLayer.addTo(window.map);
 
-// Rest of your map initialization code...
-const mapboxLayer = L.tileLayer(
-  'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
-  {
-    tileSize: 512,
-    zoomOffset: -1,
-    attribution: '&copy; <a href="https://www.mapbox.com/">Mapbox</a>'
-  }
-);
-mapboxLayer.addTo(window.map);
+  // Add scale control
+  L.control.scale({
+    imperial: false,
+    metric: true,
+    position: 'bottomright'
+  }).addTo(window.map);
+
+  // Add scenario control buttons
+  const scenarioControl = L.Control.extend({
+    options: { position: 'topleft' },
+    onAdd: function() {
+      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+      container.innerHTML = `
+        <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
+        <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
+        <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
+      `;
+      return container;
+    }
+  });
+  window.map.addControl(new scenarioControl());
 
   // Handle info panel close button
-const closeBtn = document.getElementById('close-btn');
-const infoPanel = document.getElementById('info-panel');
-
-closeBtn.addEventListener('click', function() {
-  infoPanel.classList.add('hidden');  // Hide the info panel
+  const closeBtn = document.getElementById('close-btn');
+  const infoPanel = document.getElementById('info-panel');
   
-  // Show the map after closing the info panel
-  const mapElement = document.getElementById('map');
-  mapElement.classList.remove('hidden');  // Make sure the map becomes visible
+  closeBtn.addEventListener('click', function() {
+    infoPanel.classList.add('hidden');
+    
+    // Ensure districts layer is loaded and visible
+    if (window.geojsonLoader && window.geojsonLoader.loadInitialLayers) {
+      window.geojsonLoader.loadInitialLayers()
+        .then(() => {
+          // Reset view to show districts
+          window.map.setView([54.352, 18.6466], 13);
+          window.map.invalidateSize();
+        });
+    } else {
+      // Fallback if loader isn't available
+      window.map.setView([54.352, 18.6466], 13);
+      window.map.invalidateSize();
+    }
+  });
   
-  // Trigger map resize and re-center after closing info panel
+  // Initial map resize
   setTimeout(function() {
-    // Re-center map to Gdańsk with zoom level 13, which should show the whole district
-    window.map.setView([54.352, 18.6466], 13);  // Adjust zoom level as needed
-
-    // Ensure map size is recalculated
     window.map.invalidateSize();
-  }, 100); // Delay to allow the transition
+  }, 300);
 });
-
-// Initial map resize to handle any size changes
-setTimeout(function() {
-  window.map.invalidateSize();  // Ensure the map is resized correctly after page load
-}, 100);
-
 
 // Add scale control with custom options (Only once, removed duplicate)
 L.control.scale({
