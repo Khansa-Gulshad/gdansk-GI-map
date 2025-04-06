@@ -13,17 +13,19 @@ const mapboxLayer = L.tileLayer(
 mapboxLayer.addTo(window.map);
 
   // Handle info panel close button
-  const closeBtn = document.getElementById('close-btn');
-  const infoPanel = document.getElementById('info-panel');
+const closeBtn = document.getElementById('close-btn');
+const infoPanel = document.getElementById('info-panel');
   
-  closeBtn.addEventListener('click', function() {
-    infoPanel.classList.add('hidden');
-    
-    // Trigger map resize after a short delay
-    setTimeout(function() {
-      window.map.invalidateSize();
-    }, 100);
-  });
+closeBtn.addEventListener('click', function() {
+  infoPanel.classList.add('hidden');
+  
+  // Trigger map resize and set a zoom level after closing info panel
+  setTimeout(function() {
+    // Re-center map to Gdańsk with a zoom level that shows the whole city
+    window.map.setView([54.352, 18.6466], 13); // Adjust this zoom level as needed
+    window.map.invalidateSize();
+  }, 100); // Adjust the delay if needed
+});
   
   // Initial map resize
   setTimeout(function() {
