@@ -86,7 +86,7 @@ html, body {
 }
 
 #map.hidden {
-  visibility: hidden;
+  visibility: none;
 }
 
 #close-btn {
