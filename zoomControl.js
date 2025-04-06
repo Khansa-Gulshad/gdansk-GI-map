@@ -28,16 +28,16 @@ window.map.on('zoomend', function () {
       });
     }
 
-    // Hide district and grid layers if they're on map
-    if (window.map.hasLayer(window.districtsLayer)) {
+    // Hide district and grid layers
+    if (window.districtsLayer && window.map.hasLayer(window.districtsLayer)) {
       window.map.removeLayer(window.districtsLayer);
     }
-    if (window.map.hasLayer(window.gridLayer)) {
+    if (window.gridLayer && window.map.hasLayer(window.gridLayer)) {
       window.map.removeLayer(window.gridLayer);
     }
 
   } else {
-    // Zoomed out — show district or grid based on level
+    // Zoomed out — show grid or districts
     const showGrid = currentZoom > 10;
 
     if (showGrid) {
@@ -47,7 +47,7 @@ window.map.on('zoomend', function () {
           updateLegends(window.gridData, window.currentScenario, 'grid');
         }
       }
-      if (window.map.hasLayer(window.districtsLayer)) {
+      if (window.districtsLayer && window.map.hasLayer(window.districtsLayer)) {
         window.map.removeLayer(window.districtsLayer);
       }
     } else {
@@ -57,14 +57,14 @@ window.map.on('zoomend', function () {
           updateLegends(window.districtsData, window.currentScenario, 'districts');
         }
       }
-      if (window.map.hasLayer(window.gridLayer)) {
+      if (window.gridLayer && window.map.hasLayer(window.gridLayer)) {
         window.map.removeLayer(window.gridLayer);
       }
     }
 
-    // Remove all building layers
+    // Remove all building layers safely
     [scenario1Layer, scenario2Layer, scenario3Layer].forEach(layer => {
-      if (window.map.hasLayer(layer)) {
+      if (layer && window.map.hasLayer(layer)) {
         window.map.removeLayer(layer);
       }
     });
