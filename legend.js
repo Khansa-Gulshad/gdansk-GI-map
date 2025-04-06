@@ -38,7 +38,6 @@ function calculateMinMax(data, currentScenario) {
   }
 }
 
-// Modified to use window.map and window legend references
 // Fixed legend update function
 function updateLegends(data, currentScenario, activeLayer) {
   try {
@@ -62,7 +61,7 @@ function updateLegends(data, currentScenario, activeLayer) {
       const steps = 5;
       const stepSize = (currentMax - currentMin) / steps;
 
-      // Configure title and units
+      // Configure title and units for each layer
       let title, unit;
       switch(activeLayer) {
         case 'districts':
@@ -81,6 +80,7 @@ function updateLegends(data, currentScenario, activeLayer) {
 
       div.innerHTML = `<b>${title}</b><br>`;
       
+      // Add legend steps based on min/max range
       for (let i = 0; i < steps; i++) {
         const from = (currentMin + i * stepSize).toFixed(2);
         const to = (currentMin + (i + 1) * stepSize).toFixed(2);
@@ -102,7 +102,7 @@ function updateLegends(data, currentScenario, activeLayer) {
   }
 }
 
-// Keep your existing createLegend function
+// Helper function to create a simple legend
 function createLegend(title, currentMin, currentMax, position = 'bottomleft', unit = '') {
   const legend = L.control({ position });
   
@@ -115,6 +115,7 @@ function createLegend(title, currentMin, currentMax, position = 'bottomleft', un
     const titleWithUnit = unit ? `${title} (${unit})` : title;
     div.innerHTML = `<b>${titleWithUnit}</b><br>`;
     
+    // Add legend steps based on min/max range
     for (let i = 0; i < steps; i++) {
       const from = (currentMin + i * stepSize).toFixed(2);
       const to = (currentMin + (i + 1) * stepSize).toFixed(2);
