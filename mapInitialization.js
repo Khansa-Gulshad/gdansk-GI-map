@@ -29,7 +29,7 @@ mapboxLayer.addTo(window.map);
   setTimeout(function() {
     window.map.invalidateSize();
   }, 300);
-});
+
 
 
 // Add scale control with custom options (Only once, removed duplicate)
