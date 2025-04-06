@@ -80,7 +80,40 @@ html, body {
 #info-panel button:hover {
   background-color: #00b3cc;
 }
+/* Add these new rules to your existing style.css */
+#info-panel.hidden {
+  display: none;
+}
 
+#map.hidden {
+  visibility: hidden;
+}
+
+#close-btn {
+  background-color: #00eaff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  display: block;
+  width: 100%;
+  font-size: 16px;
+}
+
+#close-btn:hover {
+  background-color: #00b3cc;
+}
+
+/* Ensure map is visible by default */
+#map {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 /* Custom Scenario Buttons */
 .leaflet-control-custom {
   background-color: rgba(0, 0, 0, 0.8);
