@@ -12,6 +12,26 @@ const mapboxLayer = L.tileLayer(
 );
 mapboxLayer.addTo(window.map);
 
+  // Handle info panel close button
+  const closeBtn = document.getElementById('close-btn');
+  const infoPanel = document.getElementById('info-panel');
+  
+  closeBtn.addEventListener('click', function() {
+    infoPanel.classList.add('hidden');
+    
+    // Trigger map resize after a short delay
+    setTimeout(function() {
+      window.map.invalidateSize();
+    }, 100);
+  });
+  
+  // Initial map resize
+  setTimeout(function() {
+    window.map.invalidateSize();
+  }, 300);
+});
+
+
 // Add scale control with custom options (Only once, removed duplicate)
 L.control.scale({
   imperial: false,  // Disable feet
