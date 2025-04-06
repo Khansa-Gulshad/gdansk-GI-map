@@ -6,8 +6,8 @@ const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Create Layer Group for Districts, Grid, and Buildings
-const districtsLayer = L.layerGroup();
-const gridLayer = L.layerGroup();
+let districtsLayer = null;
+let gridLayer = null;
 let scenario1Layer = L.layerGroup();
 let scenario2Layer = L.layerGroup();
 let scenario3Layer = L.layerGroup();
