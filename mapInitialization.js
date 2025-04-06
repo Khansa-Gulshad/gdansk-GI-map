@@ -1,8 +1,10 @@
 // mapInitialization.js
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize the map
-  window.map = L.map('map').setView([54.352, 18.6466], 13);
-  
+  // Initialize map first
+  window.map = L.map('map', {
+    preferCanvas: true // Better for large datasets
+  }).setView([54.352, 18.6466], 13);
+
   // Add tile layer
   const mapboxLayer = L.tileLayer(
     'https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2hhbnNhZ3VsIiwiYSI6ImNtOGhqcWdqMDAyb2kybHI1Mnl2MHhwYjgifQ.9Je73sehr801s1_IynnRgw',
@@ -14,54 +16,42 @@ document.addEventListener('DOMContentLoaded', function() {
   );
   mapboxLayer.addTo(window.map);
 
-  // Add scale control
-  L.control.scale({
-    imperial: false,
-    metric: true,
-    position: 'bottomright'
-  }).addTo(window.map);
+  // Add controls ONLY after map is ready
+  setTimeout(() => {
+    // Scale control
+    L.control.scale({
+      imperial: false,
+      metric: true,
+      position: 'bottomright'
+    }).addTo(window.map);
 
-  // Add scenario control buttons
-  const scenarioControl = L.Control.extend({
-    options: { position: 'topleft' },
-    onAdd: function() {
-      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-      container.innerHTML = `
-        <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
-        <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
-        <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
-      `;
-      return container;
-    }
-  });
-  window.map.addControl(new scenarioControl());
+    // Scenario controls
+    const scenarioControl = L.Control.extend({
+      options: { position: 'topleft' },
+      onAdd: function() {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.innerHTML = `
+          <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
+          <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
+          <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
+        `;
+        return container;
+      }
+    });
+    window.map.addControl(new scenarioControl());
+  }, 50); // Short delay to ensure map initialization
 
-  // Handle info panel close button
+  // Info panel handling
   const closeBtn = document.getElementById('close-btn');
   const infoPanel = document.getElementById('info-panel');
   
   closeBtn.addEventListener('click', function() {
     infoPanel.classList.add('hidden');
-    
-    // Ensure districts layer is loaded and visible
-    if (window.geojsonLoader && window.geojsonLoader.loadInitialLayers) {
-      window.geojsonLoader.loadInitialLayers()
-        .then(() => {
-          // Reset view to show districts
-          window.map.setView([54.352, 18.6466], 13);
-          window.map.invalidateSize();
-        });
-    } else {
-      // Fallback if loader isn't available
-      window.map.setView([54.352, 18.6466], 13);
-      window.map.invalidateSize();
-    }
+    setTimeout(() => window.map.invalidateSize(), 300);
   });
-  
-  // Initial map resize
-  setTimeout(function() {
-    window.map.invalidateSize();
-  }, 300);
+
+  // Initial resize
+  setTimeout(() => window.map.invalidateSize(), 500);
 });
 
 // Add scale control with custom options (Only once, removed duplicate)
