@@ -15,23 +15,28 @@ mapboxLayer.addTo(window.map);
   // Handle info panel close button
 const closeBtn = document.getElementById('close-btn');
 const infoPanel = document.getElementById('info-panel');
-  
-closeBtn.addEventListener('click', function() {
-  infoPanel.classList.add('hidden');
-  
-  // Trigger map resize and set a zoom level after closing info panel
-  setTimeout(function() {
-    // Re-center map to Gdańsk with a zoom level that shows the whole city
-    window.map.setView([54.352, 18.6466], 13); // Adjust this zoom level as needed
-    window.map.invalidateSize();
-  }, 100); // Adjust the delay if needed
-});
-  
-  // Initial map resize
-  setTimeout(function() {
-    window.map.invalidateSize();
-  }, 100);
 
+closeBtn.addEventListener('click', function() {
+  infoPanel.classList.add('hidden');  // Hide the info panel
+  
+  // Show the map after closing the info panel
+  const mapElement = document.getElementById('map');
+  mapElement.classList.remove('hidden');  // Make sure the map becomes visible
+  
+  // Trigger map resize and re-center after closing info panel
+  setTimeout(function() {
+    // Re-center map to Gdańsk with zoom level 13, which should show the whole district
+    window.map.setView([54.352, 18.6466], 13);  // Adjust zoom level as needed
+
+    // Ensure map size is recalculated
+    window.map.invalidateSize();
+  }, 100); // Delay to allow the transition
+});
+
+// Initial map resize to handle any size changes
+setTimeout(function() {
+  window.map.invalidateSize();  // Ensure the map is resized correctly after page load
+}, 100);
 
 
 // Add scale control with custom options (Only once, removed duplicate)
