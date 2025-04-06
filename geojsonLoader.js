@@ -67,8 +67,7 @@ function loadScenarioLayer(url, layerGroup) {
 // Load initial layers (returns promise for all initial loads)
 function loadInitialLayers() {
   return Promise.all([
-    loadDistrictsLayer(),
-    loadGridLayer()
+    loadDistrictsLayer()
   ]);
 }
 
