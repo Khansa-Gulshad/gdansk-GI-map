@@ -6,11 +6,12 @@ const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
 // Create Layer Group for Districts, Grid, and Buildings
-let districtsLayer = null;
-let gridLayer = null;
-let scenario1Layer = L.layerGroup();
-let scenario2Layer = L.layerGroup();
-let scenario3Layer = L.layerGroup();
+window.districtsLayer = L.layerGroup();
+window.gridLayer = L.layerGroup();
+window.scenario1Layer = L.layerGroup();
+window.scenario2Layer = L.layerGroup();
+window.scenario3Layer = L.layerGroup();
+
 
 
 // Function to load and add a GeoJSON layer
