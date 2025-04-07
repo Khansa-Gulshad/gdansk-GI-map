@@ -5,54 +5,65 @@ const scenario1Url = 'filtered_buildings_scenario1.geojson';
 const scenario2Url = 'filtered_buildings_scenario2.geojson';
 const scenario3Url = 'filtered_buildings_scenario3.geojson';
 
-// Create Layer Group for Districts, Grid, and Buildings
+// Create Layer Groups globally
 window.districtsLayer = L.layerGroup();
 window.gridLayer = L.layerGroup();
 window.scenario1Layer = L.layerGroup();
 window.scenario2Layer = L.layerGroup();
 window.scenario3Layer = L.layerGroup();
 
-
+// Add empty layer groups to map (they will be populated later)
+window.districtsLayer.addTo(window.map);
+window.gridLayer.addTo(window.map);
+window.scenario1Layer.addTo(window.map);
+window.scenario2Layer.addTo(window.map);
+window.scenario3Layer.addTo(window.map);
 
 // Function to load and add a GeoJSON layer
 function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc, isBuildingLayer = false) {
-  return fetch(url)  // Return the promise
+  return fetch(url)
     .then(response => response.json())
     .then(data => {
-      // Store the data based on layer type
-      if (url === districtsUrl) districtsData = data;
-      else if (url === gridUrl) gridData = data;
-      else if (isBuildingLayer) buildingsData = data;
+      // Store data globally
+      if (url === districtsUrl) window.districtsData = data;
+      else if (url === gridUrl) window.gridData = data;
+      else if (isBuildingLayer) window.buildingsData = data;
 
-      updateColorScale(data, currentScenario);
-      L.geoJSON(data, {
+      updateColorScale(data, window.currentScenario);
+      
+      const geojson = L.geoJSON(data, {
         style: styleFunc,
         onEachFeature: featureFunc
-      }).addTo(layerGroup);
-      
-      return data; // Return data for further processing
+      });
+
+      layerGroup.clearLayers();
+      layerGroup.addLayer(geojson);
+
+      return data;
     })
     .catch(err => {
       console.error(`Error loading GeoJSON for ${url}:`, err);
-      throw err; // Re-throw to handle in calling function
+      throw err;
     });
 }
 
+// Specific load functions (if needed separately)
 function loadDistrictsLayer() {
   return fetch(districtsUrl)
     .then(response => response.json())
     .then(data => {
-      districtsData = data;
-      updateColorScale(data, currentScenario);
+      window.districtsData = data;
+      updateColorScale(data, window.currentScenario);
 
-      // Create and store GeoJSON layer
-      districtsLayer = L.geoJSON(data, {
+      const geojson = L.geoJSON(data, {
         style: styleDistricts,
         onEachFeature: onEachDistrictFeature
       });
 
-      districtsLayer.addTo(window.map); // Add to map here or conditionally
-      updateLegends(data, currentScenario, 'districts');
+      window.districtsLayer.clearLayers();
+      window.districtsLayer.addLayer(geojson);
+
+      updateLegends(data, window.currentScenario, 'districts');
       return data;
     });
 }
@@ -61,67 +72,68 @@ function loadGridLayer() {
   return fetch(gridUrl)
     .then(response => response.json())
     .then(data => {
-      gridData = data;
-      updateColorScale(data, currentScenario);
+      window.gridData = data;
+      updateColorScale(data, window.currentScenario);
 
-      gridLayer = L.geoJSON(data, {
+      const geojson = L.geoJSON(data, {
         style: styleGrid,
         onEachFeature: onEachGridFeature
       });
 
-      gridLayer.addTo(window.map);
-      updateLegends(data, currentScenario, 'grid');
+      window.gridLayer.clearLayers();
+      window.gridLayer.addLayer(geojson);
+
+      updateLegends(data, window.currentScenario, 'grid');
       return data;
     });
 }
-// Function to load building scenario layers
+
+// Load a building scenario layer
 function loadScenarioLayer(url, layerGroup) {
   return loadGeoJSONLayer(url, layerGroup, styleBuildings, onEachBuildingFeature, true)
     .then(data => {
-      updateLegends(data, currentScenario, 'buildings');
+      updateLegends(data, window.currentScenario, 'buildings');
       return data;
     });
 }
 
-// Load initial layers (returns promise for all initial loads)
+// Load all initial layers (based on default scenario)
 function loadInitialLayers() {
-  return Promise.all([
-    loadDistrictsLayer()
-  ]);
+  return updateLayersForScenario(window.currentScenario); // usually scenario 1
 }
 
-// Function to update layers dynamically based on current scenario
-function updateLayersForScenario(currentScenario) {
-  // Clear existing layers
-  districtsLayer.clearLayers();
-  gridLayer.clearLayers();
-  scenario1Layer.clearLayers();
-  scenario2Layer.clearLayers();
-  scenario3Layer.clearLayers();
+// Function to update all layers for the selected scenario
+function updateLayersForScenario(scenario) {
+  // Clear all existing layers
+  window.districtsLayer.clearLayers();
+  window.gridLayer.clearLayers();
+  window.scenario1Layer.clearLayers();
+  window.scenario2Layer.clearLayers();
+  window.scenario3Layer.clearLayers();
 
-  // Reload layers for new scenario
+  // Load base layers
   return Promise.all([
-    loadGeoJSONLayer(districtsUrl, districtsLayer, styleDistricts, onEachDistrictFeature),
-    loadGeoJSONLayer(gridUrl, gridLayer, styleGrid, onEachGridFeature)
+    loadGeoJSONLayer(districtsUrl, window.districtsLayer, styleDistricts, onEachDistrictFeature),
+    loadGeoJSONLayer(gridUrl, window.gridLayer, styleGrid, onEachGridFeature)
   ]).then(() => {
-    // Load appropriate building layer based on scenario
-    if (currentScenario === 1) {
-      return loadScenarioLayer(scenario1Url, scenario1Layer);
-    } else if (currentScenario === 2) {
-      return loadScenarioLayer(scenario2Url, scenario2Layer);
-    } else if (currentScenario === 3) {
-      return loadScenarioLayer(scenario3Url, scenario3Layer);
+    // Load selected building layer
+    if (scenario === 1) {
+      return loadScenarioLayer(scenario1Url, window.scenario1Layer);
+    } else if (scenario === 2) {
+      return loadScenarioLayer(scenario2Url, window.scenario2Layer);
+    } else if (scenario === 3) {
+      return loadScenarioLayer(scenario3Url, window.scenario3Layer);
     }
   });
 }
 
-// Initialize the map
+// Start loading when map is initialized
 loadInitialLayers().catch(err => {
   console.error("Error loading initial layers:", err);
 });
 
-// At the bottom, expose only the necessary functions
-window.geojsonLoader = {  // <-- all lowercase to match filename
+// Expose key functions globally
+window.geojsonLoader = {
   updateLayersForScenario,
   loadInitialLayers
 };
