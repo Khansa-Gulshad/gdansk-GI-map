@@ -1,4 +1,5 @@
 // mapInitialization.js
+
 window.map = L.map('map').setView([54.352, 18.6466], 13);
 
 // Rest of your map initialization code...
@@ -47,10 +48,11 @@ const scenarioControl = L.Control.extend({
   onAdd: function () {
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
     container.innerHTML = 
+      container.innerHTML = `
       <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
       <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
       <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
-    ;
+      `;
     return container;
   }
 });
