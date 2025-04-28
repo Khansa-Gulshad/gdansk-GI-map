@@ -38,14 +38,17 @@ function calculateMinMax(data, currentScenario) {
   }
 }
 
+// legend.js
+
 // Fixed legend update function
 function updateLegends(data, currentScenario, activeLayer) {
   try {
+    // Use the correct data range for the layer
     const { currentMin, currentMax } = calculateMinMax(data, currentScenario);
 
     // Determine which legend we're working with
     const legendType = activeLayer === 'districts' ? 'district' :
-                      activeLayer === 'grid' ? 'grid' : 'building';
+                       activeLayer === 'grid' ? 'grid' : 'building';
 
     // Remove existing legend if it exists
     if (window.legends[legendType] && window.map) {
@@ -55,7 +58,7 @@ function updateLegends(data, currentScenario, activeLayer) {
 
     // Create new legend
     const legend = L.control({ position: 'bottomleft' });
-    
+
     legend.onAdd = function() {
       const div = L.DomUtil.create('div', 'info legend');
       const steps = 5;
@@ -79,7 +82,7 @@ function updateLegends(data, currentScenario, activeLayer) {
       }
 
       div.innerHTML = `<b>${title}</b><br>`;
-      
+
       // Add legend steps based on min/max range
       for (let i = 0; i < steps; i++) {
         const from = (currentMin + i * stepSize).toFixed(2);
@@ -87,7 +90,7 @@ function updateLegends(data, currentScenario, activeLayer) {
         const color = getColor((+from + +to) / 2);
         div.innerHTML += `<i style="background:${color}"></i> ${from} – ${to}${unit ? ' ' + unit : ''}<br>`;
       }
-      
+
       return div;
     };
 
@@ -96,11 +99,12 @@ function updateLegends(data, currentScenario, activeLayer) {
       legend.addTo(window.map);
       window.legends[legendType] = legend;
     }
-    
+
   } catch (error) {
     console.error("Error updating legends:", error);
   }
 }
+
 // Helper function to create a simple legend
 function createLegend(title, currentMin, currentMax, position = 'bottomleft', unit = '') {
   const legend = L.control({ position });
