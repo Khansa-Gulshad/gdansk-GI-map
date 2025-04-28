@@ -9,21 +9,14 @@ function getColor(value) {
   return colorScale(value).hex();  // Return the color corresponding to the value
 }
 
-function updateColorScale(data, currentScenario, layerType) {
+function updateColorScale(data, currentScenario) {
   let allScores = [];
 
-  if (layerType === 'districts') {
-    // Get the appropriate property for districts
+  if (currentScenario <= 3) {
     const prop = `suitable_area_km2_${currentScenario}`;
     allScores = data.features
       .map(f => safeParse(f.properties[prop]));
-  } else if (layerType === 'grid') {
-    // Get the appropriate property for grid
-    const prop = `suitable_area_km2_${currentScenario}`;
-    allScores = data.features
-      .map(f => safeParse(f.properties[prop]));
-  } else if (layerType === 'buildings') {
-    // Get the appropriate property for buildings
+  } else {
     allScores = data.features
       .map(f => safeParse(f.properties.GPS_roof));
   }
@@ -47,8 +40,6 @@ function updateColorScale(data, currentScenario, layerType) {
   } else {
     colorScale.domain([minScore, maxScore]);  // Normal domain setting
   }
-
-  console.log(`Updated Color Scale Domain for ${layerType}:`, colorScale.domain());
 }
 
 // Helper function to safely parse values, treating null/undefined as 0
