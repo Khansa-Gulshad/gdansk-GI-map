@@ -47,8 +47,7 @@ const scenarioControl = L.Control.extend({
   options: { position: 'topleft' },
   onAdd: function () {
     const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-    container.innerHTML = 
-      container.innerHTML = `
+    container.innerHTML = `
       <button class="scenario-btn" id="scenario1-btn">Scenario 1</button>
       <button class="scenario-btn" id="scenario2-btn">Scenario 2</button>
       <button class="scenario-btn" id="scenario3-btn">Scenario 3</button>
