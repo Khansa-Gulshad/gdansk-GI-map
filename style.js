@@ -2,21 +2,28 @@
 let colorScale = chroma.scale(['#d7191c', '#fdae61', '#ffffbf', '#a6d96a', '#1a9641']);
 
 function getColor(value) {
-  // If value is null, NaN or invalid, return 0 as a fallback value
+  // Ensure that the color scale uses the updated domain
   if (value === null || isNaN(value)) {
     value = 0;  // Default to 0
   }
   return colorScale(value).hex();  // Return the color corresponding to the value
 }
 
-function updateColorScale(data, currentScenario) {
+function updateColorScale(data, currentScenario, layerType) {
   let allScores = [];
 
-  if (currentScenario <= 3) {
+  if (layerType === 'districts') {
+    // Get the appropriate property for districts
     const prop = `suitable_area_km2_${currentScenario}`;
     allScores = data.features
       .map(f => safeParse(f.properties[prop]));
-  } else {
+  } else if (layerType === 'grid') {
+    // Get the appropriate property for grid
+    const prop = `suitable_area_km2_${currentScenario}`;
+    allScores = data.features
+      .map(f => safeParse(f.properties[prop]));
+  } else if (layerType === 'buildings') {
+    // Get the appropriate property for buildings
     allScores = data.features
       .map(f => safeParse(f.properties.GPS_roof));
   }
@@ -40,6 +47,8 @@ function updateColorScale(data, currentScenario) {
   } else {
     colorScale.domain([minScore, maxScore]);  // Normal domain setting
   }
+
+  console.log(`Updated Color Scale Domain for ${layerType}:`, colorScale.domain());
 }
 
 // Helper function to safely parse values, treating null/undefined as 0
