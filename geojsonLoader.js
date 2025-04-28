@@ -144,6 +144,9 @@ window.geojsonLoader = {
 
 // Handle district hover effects
 function onEachDistrictFeature(feature, layer) {
+  // Save original color style
+  const originalStyle = styleDistricts(feature);
+
   // Add hover effect (glowing effect on hover)
   layer.on('mouseover', function() {
     layer.setStyle({
@@ -155,13 +158,22 @@ function onEachDistrictFeature(feature, layer) {
 
   // Reset to default style when mouse leaves
   layer.on('mouseout', function() {
-    layer.setStyle(styleDistricts(feature));  // Reset to the default style
+    layer.setStyle(originalStyle);  // Reset to the default style
     window.map.getCanvas().style.cursor = '';  // Reset cursor
   });
+
+  // Bind popup for district feature
+  layer.bindPopup(
+    `<b>District:</b> ${feature.properties.District}<br>` +
+    `<b>Green Roof Area (Scenario ${currentScenario}):</b> ${feature.properties[`suitable_area_km2_${currentScenario}`].toFixed(2)} km²`
+  );
 }
 
 // Handle grid hover effects
 function onEachGridFeature(feature, layer) {
+  // Save original color style
+  const originalStyle = styleGrid(feature);
+
   // Add hover effect (glowing effect on hover)
   layer.on('mouseover', function() {
     layer.setStyle({
@@ -173,13 +185,22 @@ function onEachGridFeature(feature, layer) {
 
   // Reset to default style when mouse leaves
   layer.on('mouseout', function() {
-    layer.setStyle(styleGrid(feature));  // Reset to the default style
+    layer.setStyle(originalStyle);  // Reset to the default style
     window.map.getCanvas().style.cursor = '';  // Reset cursor
   });
+
+  // Bind popup for grid feature
+  layer.bindPopup(
+    `<b>Grid ID:</b> ${feature.properties.Grid_ID}<br>` +
+    `<b>Area (Scenario ${currentScenario}):</b> ${feature.properties[`suitable_area_km2_${currentScenario}`].toFixed(2)} km²`
+  );
 }
 
 // Handle building hover effects
 function onEachBuildingFeature(feature, layer) {
+  // Save original color style
+  const originalStyle = styleBuildings(feature);
+
   // Add hover effect (glowing effect on hover)
   layer.on('mouseover', function() {
     layer.setStyle({
@@ -191,7 +212,16 @@ function onEachBuildingFeature(feature, layer) {
 
   // Reset to default style when mouse leaves
   layer.on('mouseout', function() {
-    layer.setStyle(styleBuildings(feature));  // Reset to the default style
+    layer.setStyle(originalStyle);  // Reset to the default style
     window.map.getCanvas().style.cursor = '';  // Reset cursor
   });
+
+  // Bind popup for building feature
+  layer.bindPopup(
+    `<b>Greening Potential Score:</b> ${feature.properties.GPS_roof.toFixed(2)}<br>` +
+    `<b>Slope:</b> ${feature.properties.Slope.toFixed(2)}°<br>` +
+    `<b>Height:</b> ${feature.properties.Height.toFixed(2)} m<br>` +
+    `<b>Area:</b> ${feature.properties.Area1.toFixed(2)} m²<br>` +
+    `<b>Shape Ratio:</b> ${feature.properties.shape_ratio.toFixed(2)}<br>`
+  );
 }
