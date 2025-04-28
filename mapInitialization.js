@@ -1,6 +1,6 @@
 // mapInitialization.js
 
-window.map = L.map('map').setView([54.352, 18.6466], 13);
+window.map = L.map('map').setView([54.352, 18.6466], 10);
 
 // Rest of your map initialization code...
 const mapboxLayer = L.tileLayer(
