@@ -2,7 +2,7 @@
 window.map.on('zoomend', function () {
   const currentZoom = window.map.getZoom();
 
-  if (currentZoom > 12) {
+  if (currentZoom > 11) {
     // Zoomed in — show building layers
     let layerToAdd = null;
     let urlToLoad = null;
@@ -37,7 +37,7 @@ window.map.on('zoomend', function () {
 
   } else {
     // Zoomed out — show grid or districts
-    const showGrid = currentZoom > 10;
+    const showGrid = currentZoom > 11;
 
     // Show grid layer if zoomed out enough
     if (showGrid) {
