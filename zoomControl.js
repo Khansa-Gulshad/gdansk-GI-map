@@ -1,9 +1,10 @@
-// Zoom-based layer control: dynamically show layers based on zoom level
+// Listen for zoom events to dynamically show or hide layers
 window.map.on('zoomend', function () {
   const currentZoom = window.map.getZoom();
 
-  if (currentZoom > 11) {
-    // Zoomed in — show building layers
+  // Show building layers when zoomed in beyond level 12
+  if (currentZoom > 12) {
+    // Show buildings based on scenario
     let layerToAdd = null;
     let urlToLoad = null;
 
@@ -18,6 +19,7 @@ window.map.on('zoomend', function () {
       urlToLoad = scenario3Url;
     }
 
+    // Add building layer if not already added
     if (layerToAdd && !window.map.hasLayer(layerToAdd)) {
       loadScenarioLayer(urlToLoad, layerToAdd).then(() => {
         layerToAdd.addTo(window.map);
@@ -27,42 +29,48 @@ window.map.on('zoomend', function () {
       });
     }
 
-    // Remove district and grid layers if they are present
-    if (window.districtsLayer && window.map.hasLayer(window.districtsLayer)) {
-      window.map.removeLayer(window.districtsLayer);
-    }
+    // Remove grid and district layers
     if (window.gridLayer && window.map.hasLayer(window.gridLayer)) {
       window.map.removeLayer(window.gridLayer);
     }
+    if (window.districtsLayer && window.map.hasLayer(window.districtsLayer)) {
+      window.map.removeLayer(window.districtsLayer);
+    }
 
-  } else {
-    // Zoomed out — show grid or districts
-    const showGrid = currentZoom > 11;
-
-    // Show grid layer if zoomed out enough
-    if (showGrid) {
-      if (window.gridLayer && !window.map.hasLayer(window.gridLayer)) {
-        window.gridLayer.addTo(window.map);
-        if (window.gridData) {
-          updateLegends(window.gridData, window.currentScenario, 'grid');
-        }
-      }
-      if (window.districtsLayer && window.map.hasLayer(window.districtsLayer)) {
-        window.map.removeLayer(window.districtsLayer);
-      }
-    } else {
-      if (window.districtsLayer && !window.map.hasLayer(window.districtsLayer)) {
-        window.districtsLayer.addTo(window.map);
-        if (window.districtsData) {
-          updateLegends(window.districtsData, window.currentScenario, 'districts');
-        }
-      }
-      if (window.gridLayer && window.map.hasLayer(window.gridLayer)) {
-        window.map.removeLayer(window.gridLayer);
+  } else if (currentZoom > 10) {
+    // Show grid layers when zoomed in beyond level 10 but before level 12
+    if (window.gridLayer && !window.map.hasLayer(window.gridLayer)) {
+      window.gridLayer.addTo(window.map);
+      if (window.gridData) {
+        updateLegends(window.gridData, window.currentScenario, 'grid');
       }
     }
 
-    // Remove all building layers safely when zoomed out
+    // Remove district layer if it's visible
+    if (window.districtsLayer && window.map.hasLayer(window.districtsLayer)) {
+      window.map.removeLayer(window.districtsLayer);
+    }
+
+    // Remove building layers if they exist
+    [scenario1Layer, scenario2Layer, scenario3Layer].forEach(layer => {
+      if (layer && window.map.hasLayer(layer)) {
+        window.map.removeLayer(layer);
+      }
+    });
+
+  } else {
+    // Show district layers when zoomed out beyond level 10
+    if (window.districtsLayer && !window.map.hasLayer(window.districtsLayer)) {
+      window.districtsLayer.addTo(window.map);
+      if (window.districtsData) {
+        updateLegends(window.districtsData, window.currentScenario, 'districts');
+      }
+    }
+
+    // Remove grid and building layers
+    if (window.gridLayer && window.map.hasLayer(window.gridLayer)) {
+      window.map.removeLayer(window.gridLayer);
+    }
     [scenario1Layer, scenario2Layer, scenario3Layer].forEach(layer => {
       if (layer && window.map.hasLayer(layer)) {
         window.map.removeLayer(layer);
