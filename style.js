@@ -30,9 +30,16 @@ function updateColorScale(data, currentScenario) {
     return;
   }
 
+  // Find min and max values
   const minScore = Math.min(...allScores);
   const maxScore = Math.max(...allScores);
-  colorScale.domain([minScore, maxScore]);
+
+  // If min and max are the same, force a small range to avoid collapsing into one color
+  if (minScore === maxScore) {
+    colorScale.domain([minScore - 1, maxScore + 1]);  // Adjust to create a visible range
+  } else {
+    colorScale.domain([minScore, maxScore]);  // Normal domain setting
+  }
 }
 
 // Helper function to safely parse values, treating null/undefined as 0
