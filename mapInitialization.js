@@ -1,6 +1,6 @@
 // mapInitialization.js
 
-window.map = L.map('map').setView([54.352, 18.6466], 10);
+window.map = L.map('map').setView([54.352, 18.6466], 11);
 
 // Rest of your map initialization code...
 const mapboxLayer = L.tileLayer(
@@ -23,7 +23,7 @@ closeBtn.addEventListener('click', function() {
   // Trigger map resize and set a zoom level after closing info panel
   setTimeout(function() {
     // Re-center map to Gdańsk with a zoom level that shows the whole city
-    window.map.setView([54.352, 18.6466], 10); // Adjust this zoom level as needed
+    window.map.setView([54.352, 18.6466], 11); // Adjust this zoom level as needed
     window.map.invalidateSize();
   }, 100); // Adjust the delay if needed
 });
