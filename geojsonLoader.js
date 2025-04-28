@@ -20,7 +20,7 @@ window.scenario2Layer.addTo(window.map);
 window.scenario3Layer.addTo(window.map);
 
 // Function to load and add a GeoJSON layer
-function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc, isBuildingLayer = false) {
+function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc, isBuildingLayer = false, layerType) {
   return fetch(url)
     .then(response => response.json())
     .then(data => {
@@ -29,7 +29,7 @@ function loadGeoJSONLayer(url, layerGroup, styleFunc, featureFunc, isBuildingLay
       else if (url === gridUrl) window.gridData = data;
       else if (isBuildingLayer) window.buildingsData = data;
 
-      updateColorScale(data, window.currentScenario);
+      updateColorScale(data, window.currentScenario, layerType);
       
       const geojson = L.geoJSON(data, {
         style: styleFunc,
@@ -53,7 +53,7 @@ function loadDistrictsLayer() {
     .then(response => response.json())
     .then(data => {
       window.districtsData = data;
-      updateColorScale(data, window.currentScenario);
+      updateColorScale(data, window.currentScenario, 'districts');
 
       const geojson = L.geoJSON(data, {
         style: styleDistricts,
@@ -73,7 +73,7 @@ function loadGridLayer() {
     .then(response => response.json())
     .then(data => {
       window.gridData = data;
-      updateColorScale(data, window.currentScenario);
+      updateColorScale(data, window.currentScenario, 'grid');
 
       const geojson = L.geoJSON(data, {
         style: styleGrid,
@@ -90,7 +90,7 @@ function loadGridLayer() {
 
 // Load a building scenario layer
 function loadScenarioLayer(url, layerGroup) {
-  return loadGeoJSONLayer(url, layerGroup, styleBuildings, onEachBuildingFeature, true)
+  return loadGeoJSONLayer(url, layerGroup, styleBuildings, onEachBuildingFeature, true, 'buildings')
     .then(data => {
       updateLegends(data, window.currentScenario, 'buildings');
       return data;
