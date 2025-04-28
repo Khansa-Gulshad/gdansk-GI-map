@@ -101,7 +101,6 @@ function updateLegends(data, currentScenario, activeLayer) {
     console.error("Error updating legends:", error);
   }
 }
-
 // Helper function to create a simple legend
 function createLegend(title, currentMin, currentMax, position = 'bottomleft', unit = '') {
   const legend = L.control({ position });
